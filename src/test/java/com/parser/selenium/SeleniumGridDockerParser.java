@@ -11,34 +11,14 @@ public class SeleniumGridDockerParser extends TestBase {
 
 	private static final String URL_ESPN = "http://games.espn.com/fba/signin?redir=http://games.espn.go.com/fba/leagueoffice?leagueId=511966";
 
-//	private WebDriver driver;
-//	private String playerToAdd;
-//	private String playerToRemove;
-
-//	@BeforeTest
-//	public void Driver() throws MalformedURLException {
-//
-//		playerToAdd = "1404";
-//		playerToRemove = "470";
-//		String Browser = "Chrome";
-//
-//		if (Browser.equals("Firefox")) {
-//			DesiredCapabilities dcap = DesiredCapabilities.firefox();
-//			driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dcap);
-//		} else if (Browser.equals("Chrome")) {
-//			DesiredCapabilities dcap = DesiredCapabilities.chrome();
-//			driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), dcap);
-//		}
-//	}
-
 	@Test
 	public void doThese() {
-		
+
 		System.out.println("Test Started! " + Thread.currentThread().getId());
-		
+
 		// Get driver
 		WebDriver driver = getDriver();
-		
+
 		driver.get(URL_ESPN);
 		driver.switchTo().defaultContent(); // you are now outside both frames
 		driver.switchTo().frame("disneyid-iframe");
