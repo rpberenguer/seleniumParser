@@ -7,9 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
-public class SeleniumGridDockerParser extends TestBase {
-
-	private static final String URL_ESPN = "http://games.espn.com/fba/signin?redir=http://games.espn.go.com/fba/leagueoffice?leagueId=511966";
+public class SeleniumGridDockerParser extends TestBase implements Constants {
 
 	@Test
 	public void doThese() {
@@ -21,21 +19,21 @@ public class SeleniumGridDockerParser extends TestBase {
 
 		driver.get(URL_ESPN);
 		driver.switchTo().defaultContent(); // you are now outside both frames
-		driver.switchTo().frame("disneyid-iframe");
+		driver.switchTo().frame(LOGIN_IFRAME);
 		driver.getPageSource();
 
 		// Print the title
 		System.out.println("Title: " + driver.getTitle());
 
 		// Login
-		final WebElement email = driver.findElement(By.xpath("//input[@type='email']"));
+		final WebElement email = driver.findElement(BY_EMAIL_INPUT);
 		email.sendKeys("rpberenguer@gmail.com");
 
-		final WebElement password = driver.findElement(By.xpath("//input[@type='password']"));
+		final WebElement password = driver.findElement(BY_PASSWORD_INPUT);
 		password.sendKeys("8ad3aah4");
 
 		final WebElement signupButton = driver
-				.findElement(By.xpath("//button[@class='btn btn-primary btn-submit ng-isolate-scope']"));
+				.findElement(BY_SUBMIT_LOGIN_BUTTON);
 		signupButton.click();
 
 		// Wait WebDriver
@@ -43,7 +41,7 @@ public class SeleniumGridDockerParser extends TestBase {
 		WebDriverWait wait = new WebDriverWait(driver, 5000);
 
 		// Wait until Tab is clickable
-		WebElement playerTab = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#games-tabs li:nth-of-type(3) > a")));
+		WebElement playerTab = wait.until(ExpectedConditions.elementToBeClickable(BY_PLAYERS_TAB));
 		playerTab.click();
 
 		// Find (+) Add Player Linkg & click()
@@ -55,11 +53,11 @@ public class SeleniumGridDockerParser extends TestBase {
 		removePlayerCheck.click();
 
 		// Find submitButton
-		WebElement submitButton = driver.findElement(By.cssSelector("input[name='btnSubmit'][value='Submit Roster'] "));
+		WebElement submitButton = driver.findElement(BY_SUBMIT_TRADE_BUTTON);
 		submitButton.click();
 
 		// Find confirmButton
-		WebElement confirmButton = driver.findElement(By.cssSelector("input[type='submit'][name='confirmBtn'] "));
+		WebElement confirmButton = driver.findElement(BY_CONFIRM_TRADE_BUTTON);
 		confirmButton.click();
 
 		System.out.println("Test Ended! " + Thread.currentThread().getId());

@@ -12,11 +12,14 @@ import org.testng.xml.XmlSuite;
 import org.testng.xml.XmlSuite.ParallelMode;
 import org.testng.xml.XmlTest;
 
-public class TestNgDynamicallyTest  {
-
+public class TestNgRunner  {
 
 	@Test
 	public void doThese() {
+
+		// Suite List
+		List<XmlSuite> suites = new ArrayList<XmlSuite>();
+
 		// Suite
 		XmlSuite suite = new XmlSuite();
 		suite.setName("Suite");
@@ -30,7 +33,6 @@ public class TestNgDynamicallyTest  {
 		test.setParallel(ParallelMode.METHODS);
 
 		// Params
-		// Add parameter to XmlClass
 		Map<String, String> params = new HashMap<>();
 		params.put("browser", "firefox");
 		params.put("playerToAdd", "111");
@@ -48,7 +50,6 @@ public class TestNgDynamicallyTest  {
 		test2.setParameters(params);
 		test2.setXmlClasses(classes) ;
 
-		List<XmlSuite> suites = new ArrayList<XmlSuite>();
 		suites.add(suite);
 
 		TestNG tng = new TestNG();
