@@ -47,6 +47,8 @@ public class TestNgRunner  {
 		// Test2
 		XmlTest test2 = new XmlTest(suite);
 		test2.setName("SecondTest");
+		test2.setThreadCount(5);
+		test2.setParallel(ParallelMode.METHODS);
 		test2.setParameters(params);
 		test2.setXmlClasses(classes) ;
 
