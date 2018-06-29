@@ -1,4 +1,4 @@
-package com.example.selenium;
+package com.parser.selenium;
 
 import java.util.List;
 
