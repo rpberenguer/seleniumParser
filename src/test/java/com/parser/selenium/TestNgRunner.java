@@ -35,8 +35,8 @@ public class TestNgRunner  {
 		// Params
 		Map<String, String> params = new HashMap<>();
 		params.put("browser", "firefox");
-		params.put("playerToAdd", "111");
-		params.put("playerToRemove", "222");
+		params.put("playerToAdd", "1272");
+		params.put("playerToRemove", "346");
 		test.setParameters(params);
 
 		// Classes
@@ -49,7 +49,14 @@ public class TestNgRunner  {
 		test2.setName("SecondTest");
 		test2.setThreadCount(5);
 		test2.setParallel(ParallelMode.METHODS);
-		test2.setParameters(params);
+		
+		// Params Test2
+		Map<String, String> params2 = new HashMap<>();
+		params2.put("browser", "firefox");
+		params2.put("playerToAdd", "1267");
+		params2.put("playerToRemove", "965");
+
+		test2.setParameters(params2);
 		test2.setXmlClasses(classes) ;
 
 		suites.add(suite);

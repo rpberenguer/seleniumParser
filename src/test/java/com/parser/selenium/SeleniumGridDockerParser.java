@@ -5,12 +5,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class SeleniumGridDockerParser extends TestBase implements Constants {
 
 	@Test
-	public void doThese() {
+	@Parameters(value={"playerToAdd", "playerToRemove"})
+	public void doThese(String playerToAdd, String playerToRemove) {
 
 		System.out.println("Test Started! " + Thread.currentThread().getId());
 
@@ -45,11 +47,11 @@ public class SeleniumGridDockerParser extends TestBase implements Constants {
 		playerTab.click();
 
 		// Find (+) Add Player Linkg & click()
-		WebElement addPlayerLink = driver.findElement(By.cssSelector("#plyr" + getPlayerToAdd() + " td:nth-of-type(4) > a"));
+		WebElement addPlayerLink = driver.findElement(By.cssSelector("#plyr" + playerToAdd + " td:nth-of-type(4) > a"));
 		addPlayerLink.click();
 
 		// Find checkBox to Remove Player
-		WebElement removePlayerCheck = driver.findElement(By.cssSelector("#plyr" + getPlayerToRemove() + " td:nth-of-type(1) > input"));
+		WebElement removePlayerCheck = driver.findElement(By.cssSelector("#plyr" + playerToRemove + " td:nth-of-type(1) > input"));
 		removePlayerCheck.click();
 
 		// Find submitButton
