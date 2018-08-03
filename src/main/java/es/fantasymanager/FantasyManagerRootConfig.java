@@ -13,7 +13,7 @@ import com.innofis.omnichannel.ecorp.alertmanager.configuration.hystrix.shutdown
  */
 
 @SpringBootApplication(scanBasePackages = "com.innofis.omnichannel")
-public class AlertManagerRootConfig extends SpringBootServletInitializer {
+public class FantasyManagerRootConfig extends SpringBootServletInitializer {
 
 	public static void main(String[] args) throws Exception {
 		ConfigurableApplicationContext cac = configureApplication(new SpringApplicationBuilder()).run(args);
@@ -21,7 +21,7 @@ public class AlertManagerRootConfig extends SpringBootServletInitializer {
 	}
 
 	private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
-		builder.sources(AlertManagerRootConfig.class);
+		builder.sources(FantasyManagerRootConfig.class);
 		return builder;
 	}
 
