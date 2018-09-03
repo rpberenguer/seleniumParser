@@ -70,6 +70,9 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		WebElement confirmButton = driver.findElement(BY_CONFIRM_TRADE_BUTTON);
 		confirmButton.click();
 
+		// Quit driver
+		driver.quit();
+
 		log.debug("Trade Ended! " + Thread.currentThread().getId());
 	}
 }
