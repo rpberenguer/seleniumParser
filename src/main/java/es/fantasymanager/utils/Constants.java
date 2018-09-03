@@ -1,4 +1,4 @@
-package com.parser.selenium;
+package es.fantasymanager.utils;
 
 import org.openqa.selenium.By;
 

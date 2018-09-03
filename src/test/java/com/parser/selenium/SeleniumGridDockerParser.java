@@ -8,6 +8,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
+import es.fantasymanager.utils.Constants;
+
 public class SeleniumGridDockerParser extends TestBase implements Constants {
 
 	@Test
