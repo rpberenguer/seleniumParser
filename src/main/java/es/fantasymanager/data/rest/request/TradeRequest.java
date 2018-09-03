@@ -1,4 +1,4 @@
-package es.fantasymanager.data;
+package es.fantasymanager.data.rest.request;
 
 import lombok.Data;
 
