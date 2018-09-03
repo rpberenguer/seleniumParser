@@ -1,4 +1,4 @@
-package es.fantasymanager.services;
+package es.fantasymanager.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
