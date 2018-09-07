@@ -1,5 +1,7 @@
 package es.fantasymanager.services;
 
+import java.net.MalformedURLException;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -20,9 +22,11 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 	private SeleniumGridDockerHub hub;
 
 	@Override
-	public void doTrade(String playerToAdd, String playerToRemove) {
+	public void doTrade(String playerToAdd, String playerToRemove) throws MalformedURLException {
 
-		log.debug("Trade Started! " + Thread.currentThread().getId());
+		log.info("Trade Started! " + Thread.currentThread().getId());
+		
+		hub.setupDriver("chrome");
 
 		// Get driver
 		WebDriver driver = hub.getDriver();
@@ -33,14 +37,14 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		driver.getPageSource();
 
 		// Print the title
-		log.debug("Title: " + driver.getTitle());
+		log.info("Title: " + driver.getTitle());
 
 		// Login
 		final WebElement email = driver.findElement(BY_EMAIL_INPUT);
 		email.sendKeys("rpberenguer@gmail.com");
 
 		final WebElement password = driver.findElement(BY_PASSWORD_INPUT);
-		password.sendKeys("*****");
+		password.sendKeys("8ad3aah4");
 
 		final WebElement signupButton = driver
 				.findElement(BY_SUBMIT_LOGIN_BUTTON);
@@ -73,6 +77,6 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		// Quit driver
 		driver.quit();
 
-		log.debug("Trade Ended! " + Thread.currentThread().getId());
+		log.info("Trade Ended! " + Thread.currentThread().getId());
 	}
 }

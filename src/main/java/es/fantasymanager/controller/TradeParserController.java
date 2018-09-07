@@ -1,5 +1,7 @@
 package es.fantasymanager.controller;
 
+import java.net.MalformedURLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,11 +22,11 @@ public class TradeParserController {
 
 	@GetMapping("/hello")
 	public String test2() {
-		return "Hola FantasyManager!!!!!!!!!!";
+		return "Hola FantasyManager!";
 	}
 
 	@PostMapping(value = "/parser/trade")
-	public String trade(@RequestBody TradeRequest request) {
+	public String trade(@RequestBody TradeRequest request) throws MalformedURLException {
 
 		log.info("Inicio parseo estadisticas");
 		service.doTrade(request.getPlayerToAdd(), request.getPlayerToRemove());

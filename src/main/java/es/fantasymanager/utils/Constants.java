@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 
 public interface Constants {
 
-	public static final String URL_ESPN = "http://games.espn.com/fba/signin?redir=http://games.espn.go.com/fba/leagueoffice?leagueId=511966";
+	public static final String URL_ESPN = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
 	public static final String LOGIN_IFRAME = "disneyid-iframe";
 
 	public static final By BY_EMAIL_INPUT = By.xpath("//input[@type='email']");
