@@ -3,6 +3,7 @@ package es.fantasymanager.services;
 import java.net.MalformedURLException;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,13 +26,13 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 	public void doTrade(String playerToAdd, String playerToRemove) throws MalformedURLException {
 
 		log.info("Trade Started! " + Thread.currentThread().getId());
-		
+
 		hub.setupDriver("chrome");
 
 		// Get driver
 		WebDriver driver = hub.getDriver();
 
-		driver.get(URL_ESPN);
+		driver.get(URL_ADD_PLAYERS);
 		driver.switchTo().defaultContent(); // you are now outside both frames
 		driver.switchTo().frame(LOGIN_IFRAME);
 		driver.getPageSource();
@@ -46,32 +47,30 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		final WebElement password = driver.findElement(BY_PASSWORD_INPUT);
 		password.sendKeys("8ad3aah4");
 
-		final WebElement signupButton = driver
-				.findElement(BY_SUBMIT_LOGIN_BUTTON);
+		final WebElement signupButton = driver.findElement(BY_SUBMIT_LOGIN_BUTTON);
 		signupButton.click();
 
 		// Wait WebDriver
 		driver.switchTo().defaultContent();
-		WebDriverWait wait = new WebDriverWait(driver, 5000);
-
-		// Wait until Tab is clickable
-		WebElement playerTab = wait.until(ExpectedConditions.elementToBeClickable(BY_PLAYERS_TAB));
-		playerTab.click();
+		WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Find (+) Add Player Linkg & click()
-		WebElement addPlayerLink = driver.findElement(By.cssSelector("#plyr" + playerToAdd + " td:nth-of-type(4) > a"));
+		WebElement addPlayerLink = wait
+				.until(ExpectedConditions.elementToBeClickable(By.xpath(String.format(ADD_PLAYER_LINK, playerToAdd))));
 		addPlayerLink.click();
 
 		// Find checkBox to Remove Player
-		WebElement removePlayerCheck = driver.findElement(By.cssSelector("#plyr" + playerToRemove + " td:nth-of-type(1) > input"));
-		removePlayerCheck.click();
+		WebElement removePlayerLink = wait.until(
+				ExpectedConditions.elementToBeClickable(By.xpath(String.format(REMOVE_PLAYER_LINK, playerToRemove))));
+		// js executor
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", removePlayerLink);
 
 		// Find submitButton
-		WebElement submitButton = driver.findElement(BY_SUBMIT_TRADE_BUTTON);
-		submitButton.click();
+		WebElement continueButton = driver.findElement(BY_CONTINUE_TRADE_BUTTON);
+		continueButton.click();
 
 		// Find confirmButton
-		WebElement confirmButton = driver.findElement(BY_CONFIRM_TRADE_BUTTON);
+		WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
 		confirmButton.click();
 
 		// Quit driver
