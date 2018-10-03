@@ -27,11 +27,10 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 
 		log.info("Trade Started! " + Thread.currentThread().getId());
 
-		
 		// Get driver
 		hub.setupDriver("chrome");
 		WebDriver driver = hub.getDriver();
-		
+
 		try {
 			driver.get(URL_ADD_PLAYERS);
 			driver.switchTo().defaultContent(); // you are now outside both frames
