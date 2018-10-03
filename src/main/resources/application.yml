@@ -1,7 +1,16 @@
 server:
-  port: 8081
+  port: 8090
   
 spring:
   h2:
     console:
       enabled: true
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fantasymanager
+    username: fm
+    password: 1111
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true 

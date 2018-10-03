@@ -2,7 +2,9 @@ selenium-hub:
   image: selenium/hub
   ports:
   - 4444:4444
-
+  environment:
+    - GRID_BROWSER_TIMEOUT=120
+    - GRID_TIMEOUT=120
 chrome:
   image: selenium/node-chrome-debug
   links:
