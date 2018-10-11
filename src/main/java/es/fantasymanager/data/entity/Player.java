@@ -1,13 +1,13 @@
 package es.fantasymanager.data.entity;
 
-import java.util.List;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,22 +21,21 @@ import lombok.ToString;
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString
-public class Team {
+public class Player  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer teamId;
+	private Integer playerId;
 
-	@Column(nullable = false, unique = true, length = 50)
+	@Column(nullable = false, length = 100)
 	private String name;
 
-	@Column(unique = true, length = 4)
-	private String shortCode;
+	private String nbaId;
 
-	@Column(unique = true, length = 50)
-	private String longCode;
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "TEAM_ID")
+	private Team team;
 
-	@OneToMany(mappedBy = "team")
-	private List<Player> players;
+
 
 }

@@ -4,8 +4,10 @@ import org.openqa.selenium.By;
 
 public interface Constants {
 
+	public static final String URL_ESPN = "http://www.espn.com";
+	public static final String URL_ESPN_FANTASY = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
+	
 	// TRADE
-	public static final String URL_ESPN = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
 	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
 	public static final String LOGIN_IFRAME = "disneyid-iframe";
 
@@ -25,5 +27,8 @@ public interface Constants {
 	
 	// ROSTER
 	public static final String URL_TEAMS = "http://espn.go.com/nba/teams";
-	public static final By BY_TEAM_LINK = By.xpath("//a[starts-with(@href, '/nba/team/roster/_/name/')]");
+	public static final String TEAM_LINK = "/nba/team/roster/_/name/";
+	public static final String PLAYER_LINK = "/nba/player/_/id/";
+	public static final By BY_TEAM_LINK = By.xpath("//a[starts-with(@href, '" + TEAM_LINK + "')]");
+	public static final By BY_PLAYER_LINK = By.xpath("//a[starts-with(@href, '" + URL_ESPN + PLAYER_LINK + "')]");
 }
