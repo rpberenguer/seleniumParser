@@ -9,6 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,14 +70,15 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			}
 
 			List<Team> teams = (List<Team>) teamRespository.findAll();
-//				teamLink.click();
-				
+			WebDriverWait wait = new WebDriverWait(driver, 90);
 			for (Team team : teams) {
 				// Get Roster URL
 				driver.get(URL_ESPN + TEAM_LINK + team.getShortCode() + "/" + team.getLongCode());
 
-				// Team Links
-				final List<WebElement> playerLinks = driver.findElements(BY_PLAYER_LINK);
+				// Players Links			
+//				final List<WebElement> playerLinks = driver.findElements(BY_PLAYER_LINK);
+				final List<WebElement> playerLinks = wait.until(
+						ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_PLAYER_LINK));
 
 				for (WebElement playerLink : playerLinks) {
 					String hrefPlayer = playerLink.getAttribute("href");
