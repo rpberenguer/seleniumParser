@@ -7,7 +7,9 @@ public interface Constants {
 	public static final String URL_ESPN = "http://www.espn.com";
 	public static final String URL_ESPN_FANTASY = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
 	
-	// TRADE
+	/******************************
+	*********** TRADE *************
+	*******************************/
 	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
 	public static final String LOGIN_IFRAME = "disneyid-iframe";
 
@@ -25,10 +27,20 @@ public interface Constants {
 	public static final By BY_SUBMIT_TRADE_BUTTON = By.cssSelector("input[name='btnSubmit'][value='Submit Roster'] ");
 	public static final By BY_CONFIRM_TRADE_BUTTON = By.cssSelector("a.btn.btn--custom.btn-confirm-action.mb3");
 	
-	// ROSTER
+	/******************************
+	*********** ROSTER *************
+	*******************************/
 	public static final String URL_TEAMS = "http://espn.go.com/nba/teams";
 	public static final String TEAM_LINK = "/nba/team/roster/_/name/";
 	public static final String PLAYER_LINK = "/nba/player/_/id/";
 	public static final By BY_TEAM_LINK = By.xpath("//a[starts-with(@href, '" + TEAM_LINK + "')]");
 	public static final By BY_PLAYER_LINK = By.xpath("//a[starts-with(@href, '" + URL_ESPN + PLAYER_LINK + "')]");
+	
+	
+	/******************************
+	*********** STATISTIC *************
+	*******************************/
+	public static final String URL_SCHEDULE = "http://www.espn.com/nba/schedule/_/date/";
+	public static final By BY_SCHEDULE_TABLE_DAY = By.cssSelector("table.schedule has-team-logos align-left");
+	public static final By BY_GAME_LINK = By.cssSelector("a[id$='/nba/game?gameId=']");
 }

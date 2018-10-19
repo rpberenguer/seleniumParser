@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class SeleniumGridDockerHub {
 
 	//Declare ThreadLocal Driver (ThreadLocalMap) for ThreadSafe Tests
-	protected static ThreadLocal<RemoteWebDriver> driver = new ThreadLocal<>();
+	protected static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
 
 
 	public void setupDriver (String browser) throws MalformedURLException {
@@ -21,6 +21,7 @@ public class SeleniumGridDockerHub {
 
 		//Set BrowserName
 		capabilities.setCapability("browserName", browser);
+		
 
 		//Set Browser to ThreadLocalMap
 		driver.set(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities));
