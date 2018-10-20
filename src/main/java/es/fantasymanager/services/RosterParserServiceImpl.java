@@ -61,7 +61,7 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 				String hrefTeam = teamLink.getAttribute("href");
 				log.debug("Team link {}", hrefTeam);
 
-				String[] codes = StringUtils.substringAfter(hrefTeam, TEAM_LINK).split("/");
+				String[] codes = StringUtils.substringAfter(hrefTeam, ROSTER_LINK).split("/");
 				Team team = new Team();
 				team.setShortCode(codes[0]);
 				team.setLongCode(codes[1]);
@@ -75,7 +75,7 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 //			WebDriverWait wait = new WebDriverWait(driver, 90);
 			for (Team team : teams) {
 				// Get Roster URL
-				driver.get(URL_ESPN + TEAM_LINK + team.getShortCode() + "/" + team.getLongCode());
+				driver.get(URL_ESPN + ROSTER_LINK + team.getShortCode() + "/" + team.getLongCode());
 
 				// Players Links			
 				final List<WebElement> playerLinks = driver.findElements(BY_PLAYER_LINK);

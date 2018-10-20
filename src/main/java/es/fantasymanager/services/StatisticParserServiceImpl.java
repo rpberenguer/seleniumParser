@@ -47,19 +47,30 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 			// Print the title
 			log.info("Title: " + driver.getTitle());
 
-			// Team Links
+			// Tables with all week games
 			final List<WebElement> weekGames = driver.findElements(BY_SCHEDULE_TABLE_DAY);
 
 			for (WebElement dayGames : weekGames) {
 
 				List<WebElement> gameLinks = dayGames.findElements(BY_GAME_LINK);
-				
 				for (WebElement gameLink : gameLinks) {					
 					log.debug("Game link {}", gameLink);
 					
+					final String gameId = StringUtils.substringAfter(gameLink.getAttribute("href"), GAME_LINK);
 					Game game = new Game();
+					game.setNbaId(gameId);
 					
 					gameRespository.save(game);
+				}
+				
+				// Sumamos un día a la fecha inicial
+				dateTimeFrom = dateTimeFrom.plusDays(1);
+
+				// Si hemos superado la fecha fin hemos llegado al final del
+				// parseo
+				if (dateTimeFrom.isAfter(dateTimeTo)) {
+					log.info("Fin del parseo!!");
+					return;
 				}
 			}
 		} finally {
