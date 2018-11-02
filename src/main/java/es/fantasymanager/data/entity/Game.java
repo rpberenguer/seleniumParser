@@ -40,7 +40,7 @@ public class Game {
 	@JoinColumn(name = "TEAM_AWAY_ID")
 	private Team teamAway;
 
-	private int teamLocalScore;
+	private int teamHomeScore;
 
 	private int teamAwayScore;
 

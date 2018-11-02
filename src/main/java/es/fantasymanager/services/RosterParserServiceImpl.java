@@ -54,7 +54,7 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			log.info("Title: " + driver.getTitle());
 
 			// Team Links
-			final List<WebElement> teamLinks = driver.findElements(BY_TEAM_LINK);
+			final List<WebElement> teamLinks = driver.findElements(BY_ROSTER_LINK);
 
 			for (WebElement teamLink : teamLinks) {
 
