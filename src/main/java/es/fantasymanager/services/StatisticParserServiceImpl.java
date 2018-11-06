@@ -57,17 +57,18 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 		log.info("Statistic Parser Started! " + Thread.currentThread().getId());
 
 		try {
+			driver = new ChromeDriver();
 			driver.get(URL_SCHEDULE + dateTimeFrom.format(formatter));
 
 			// Print the title
 			log.debug("Title: {}", driver.getTitle());
 
 			// Tables with all week games
-			final List<WebElement> weekGames = driver.findElements(BY_SCHEDULE_TABLE_DAY);
+			final List<WebElement> tableDayList = driver.findElements(BY_SCHEDULE_TABLE_DAY);
 
-			for (WebElement dayGames : weekGames) {
-				List<WebElement> gameLinks = dayGames.findElements(BY_GAME_LINK);
-				for (WebElement gameLink : gameLinks) {					
+			for (WebElement tableDay : tableDayList) {
+				List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
+				for (WebElement gameLink : gameByDays) {					
 					log.debug("Game link {}", gameLink);
 					
 					Game game = new Game();
@@ -120,7 +121,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 				Team teamAway = teamRepository.findByShortCode(teamAwayShortCode);
 				
 				game.setTeamHome(teamHome);
-				game.setTeamHome(teamAway);
+				game.setTeamAway(teamAway);
 				game.setTeamAwayScore(Integer.valueOf(scoreAwayDiv.getText()));
 				game.setTeamHomeScore(Integer.valueOf(scoreHomeDiv.getText()));
 				
@@ -162,6 +163,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 	}
 	
 	private Statistic parseStatisticRow(WebElement statisticRow) {
+		
 		Statistic statistic = new Statistic();
 		
 		WebElement playerLink = statisticRow.findElement(BY_PLAYER_LINK);
@@ -245,10 +247,5 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 		} else {
 			return null;
 		}
-	}
-
-	@PostConstruct
-	private void postConstruct() {
-		driver = new ChromeDriver();
 	}
 }

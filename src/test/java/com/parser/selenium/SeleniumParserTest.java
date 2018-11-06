@@ -47,6 +47,6 @@ public class SeleniumParserTest implements Constants {
 		
 		LocalDate dateTimeFrom = LocalDate.of(2017, Month.OCTOBER, 17);
 		LocalDate dateTimeTo = LocalDate.of(2017, Month.OCTOBER, 31);
-		statisticService.getStatistics(dateTimeFrom, dateTimeTo);;
+		statisticService.getStatistics(dateTimeFrom, dateTimeTo);
 	}
 }
