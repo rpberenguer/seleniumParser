@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +14,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +28,7 @@ import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.data.repository.StatisticRepository;
 import es.fantasymanager.data.repository.TeamRepository;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -47,17 +48,23 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 
 	@Autowired
 	private transient StatisticRepository statisticRepository;
-	
-	private WebDriver driver;
+
+	//	private WebDriver driver;
+
+	@Autowired
+	private SeleniumGridDockerHub hub;
 
 	@Override
 	@Transactional
 	public void getStatistics(LocalDate dateTimeFrom, final LocalDate dateTimeTo) throws MalformedURLException {
 
 		log.info("Statistic Parser Started! " + Thread.currentThread().getId());
+		//			driver = new ChromeDriver();
+		hub.setupDriver("chrome");
+		WebDriver driver = hub.getDriver();
+		WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {
-			driver = new ChromeDriver();
 			driver.get(URL_SCHEDULE + dateTimeFrom.format(formatter));
 
 			// Print the title
@@ -68,20 +75,20 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 
 			for (WebElement tableDay : tableDayList) {
 				List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
-				for (WebElement gameLink : gameByDays) {					
+				for (WebElement gameLink : gameByDays) {
 					log.debug("Game link {}", gameLink);
-					
+
 					Game game = new Game();
-					
+
 					final String gameId = StringUtils.substringAfter(gameLink.getAttribute("href"), GAME_LINK);
 					game.setNbaId(gameId);
-					
+
 					final Date date = Date.from(dateTimeFrom.atStartOfDay(ZoneId.systemDefault()).toInstant());
 					game.setDate(date);
-					
+
 					gameRepository.save(game);
 				}
-				
+
 				// Sumamos un día a la fecha inicial
 				dateTimeFrom = dateTimeFrom.plusDays(1);
 
@@ -92,46 +99,51 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 					break;
 				}
 			}
-			
+
 			// Empezamos el parseo de statistics de cada partido
 			log.debug("Empezamos parseo de statistics");
-			
+
 			List<Game> games = (List<Game>) gameRepository.findAll();
-			
+
 			for (Game game : games) {
 				// Get Game
 				log.debug("GameId {}", game.getNbaId());
-				
+
 				driver.get(URL_ESPN + BOXSCORE_LINK + game.getNbaId());
-				
+
 				// Team Home
-				WebElement teamHomeDiv = driver.findElement(BY_TEAM_HOME_DIV);
+				//				WebElement teamHomeDiv = driver.findElement(BY_TEAM_HOME_DIV);
+				WebElement teamHomeDiv = wait.until(
+						ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV));
 				WebElement scoreHomeDiv = teamHomeDiv.findElement(BY_SCORE_HOME_DIV);
 				WebElement teamHomeLink = teamHomeDiv.findElement(BY_TEAM_LINK);
 				String teamHomeShortCode = StringUtils.substringBetween(teamHomeLink.getAttribute("href"), TEAM_LINK, "/");
-				
+
 				Team teamHome = teamRepository.findByShortCode(teamHomeShortCode);
 
 				// Team Away
-				WebElement teamAwayDiv = driver.findElement(BY_TEAM_AWAY_DIV);
+				WebElement teamAwayDiv = wait.until(
+						ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV));
 				WebElement scoreAwayDiv = teamAwayDiv.findElement(BY_SCORE_AWAY_DIV);
 				WebElement teamAwayLink = teamAwayDiv.findElement(BY_TEAM_LINK);
 				String teamAwayShortCode = StringUtils.substringBetween(teamAwayLink.getAttribute("href"), TEAM_LINK, "/");
-				
+
 				Team teamAway = teamRepository.findByShortCode(teamAwayShortCode);
-				
+
 				game.setTeamHome(teamHome);
 				game.setTeamAway(teamAway);
 				game.setTeamAwayScore(Integer.valueOf(scoreAwayDiv.getText()));
 				game.setTeamHomeScore(Integer.valueOf(scoreHomeDiv.getText()));
-				
+
 				gameRepository.save(game);
-				
+
 				// Statistics Home
-				List<WebElement> statisticHomeRows = driver.findElements(BY_STATISTIC_HOME_ROWS);
+				List<WebElement> statisticHomeRows = wait.until(
+						ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_HOME_ROWS));
 				for (WebElement statisticRow : statisticHomeRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
-						Statistic statistic = parseStatisticRow((statisticRow));
+						Statistic statistic = parseStatisticRow(statisticRow);
+						log.debug("Statistic {}", statistic);
 						if (statistic != null) {
 							statistic.setGame(game);
 							statistic = statisticRepository.save(statistic);
@@ -139,12 +151,14 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 						}
 					}
 				}
-				
+
 				// Statistics Away
-				List<WebElement> statisticAwayRows = driver.findElements(BY_STATISTIC_AWAY_ROWS);
+				List<WebElement> statisticAwayRows = wait.until(
+						ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_AWAY_ROWS));
 				for (WebElement statisticRow : statisticAwayRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
-						Statistic statistic = parseStatisticRow((statisticRow));
+						Statistic statistic = parseStatisticRow(statisticRow);
+						log.debug("Statistic {}", statistic);
 						if (statistic != null) {
 							statistic.setGame(game);
 							statistic = statisticRepository.save(statistic);
@@ -153,7 +167,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 					}
 				}
 			}
-			
+
 		} finally {
 			// Quit driver
 			driver.quit();
@@ -161,24 +175,24 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 
 		log.info("Statistic Parser Ended! " + Thread.currentThread().getId());
 	}
-	
+
 	private Statistic parseStatisticRow(WebElement statisticRow) {
-		
+
 		Statistic statistic = new Statistic();
-		
+
 		WebElement playerLink = statisticRow.findElement(BY_PLAYER_LINK);
 		String nbaId = StringUtils.substringAfter(playerLink.getAttribute("href"), PLAYER_LINK);
-		
+
 		Player player = playerRepository.findPlayerByNbaId(nbaId);
 		if(player == null) {
 			player = new Player();
 			player.setNbaId(nbaId);
 			player.setName(playerLink.findElement(By.cssSelector("span:nth-child(1)")).getText());
-			player = playerRepository.save(player);			
+			player = playerRepository.save(player);
 		}
-		
+
 		statistic.setPlayer(player);
-		
+
 		final WebElement minsCell = statisticRow.findElement(By.cssSelector("td:nth-child(2)"));
 		if (!"dnp".equals(minsCell.getAttribute("class")) && NumberUtils.isCreatable(minsCell.getText())) {
 
@@ -194,8 +208,8 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 			if (tirosTotales.length == 2) {
 				tirosTotAnotados = tirosTotales[0] != null && !"".equals(tirosTotales[0])
 						? Integer.parseInt(tirosTotales[0]) : 0;
-				tirosTotRealizados = tirosTotales[1] != null && !"".equals(tirosTotales[1])
-						? Integer.parseInt(tirosTotales[1]) : 0;
+						tirosTotRealizados = tirosTotales[1] != null && !"".equals(tirosTotales[1])
+								? Integer.parseInt(tirosTotales[1]) : 0;
 			}
 
 			Integer tiros3Anotados = null;
@@ -213,8 +227,8 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 			if (tirosLibres.length == 2) {
 				tirosLibresAnotados = tirosLibres[0] != null && !"".equals(tirosLibres[0])
 						? Integer.parseInt(tirosLibres[0]) : 0;
-				tirosLibresRealizados = tirosLibres[1] != null && !"".equals(tirosLibres[1])
-						? Integer.parseInt(tirosLibres[1]) : 0;
+						tirosLibresRealizados = tirosLibres[1] != null && !"".equals(tirosLibres[1])
+								? Integer.parseInt(tirosLibres[1]) : 0;
 			}
 
 			final String rebotes = statisticRow.findElement(By.cssSelector("td:nth-child(8)")).getText();
@@ -234,7 +248,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 			statistic.setFreeThrowsAttempted(tirosLibresRealizados);
 			statistic.setRebounds(rebotes != null && !"".equals(rebotes) ? Integer.parseInt(rebotes) : 0);
 			statistic
-					.setAssists(asistencias != null && !"".equals(asistencias) ? Integer.parseInt(asistencias) : 0);
+			.setAssists(asistencias != null && !"".equals(asistencias) ? Integer.parseInt(asistencias) : 0);
 			statistic.setFaults(faltas != null && !"".equals(faltas) ? Integer.parseInt(faltas) : 0);
 			statistic.setSteals(robos != null && !"".equals(robos) ? Integer.parseInt(robos) : 0);
 			statistic.setTurnovers(perdidas != null && !"".equals(perdidas) ? Integer.parseInt(perdidas) : 0);
