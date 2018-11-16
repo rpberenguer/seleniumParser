@@ -28,6 +28,7 @@ import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.data.repository.StatisticRepository;
 import es.fantasymanager.data.repository.TeamRepository;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.DateUtils;
 import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,6 +65,8 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 		WebDriver driver = hub.getDriver();
 		WebDriverWait wait = new WebDriverWait(driver, 90);
 
+		LocalDate from = dateTimeFrom;
+
 		try {
 			driver.get(URL_SCHEDULE + dateTimeFrom.format(formatter));
 
@@ -71,7 +74,8 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 			log.debug("Title: {}", driver.getTitle());
 
 			// Tables with all week games
-			final List<WebElement> tableDayList = driver.findElements(BY_SCHEDULE_TABLE_DAY);
+			final List<WebElement> tableDayList = wait.until(
+					ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_SCHEDULE_TABLE_DAY));
 
 			for (WebElement tableDay : tableDayList) {
 				List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
@@ -103,7 +107,8 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 			// Empezamos el parseo de statistics de cada partido
 			log.debug("Empezamos parseo de statistics");
 
-			List<Game> games = (List<Game>) gameRepository.findAll();
+			List<Game> games = gameRepository.findByDateBetween(DateUtils.asDate(from), DateUtils.asDate(dateTimeTo));
+			//			List<Game> games = (List<Game>) gameRepository.findAll();
 
 			for (Game game : games) {
 				// Get Game
