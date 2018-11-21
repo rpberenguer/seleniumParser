@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
+@Table(name="PLAYER")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -38,7 +40,7 @@ public class Player  {
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "TEAM_ID")
 	private Team team;
-	
+
 	@OneToMany(mappedBy = "player")
 	private List<Statistic> statistics;
 

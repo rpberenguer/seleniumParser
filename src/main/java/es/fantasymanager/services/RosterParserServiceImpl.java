@@ -9,7 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,11 +42,11 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 		log.info("Roster Parser Started! " + Thread.currentThread().getId());
 
 		// Get driver
-//		hub.setupDriver("chrome");
-//		WebDriver driver = hub.getDriver();
-//		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-//		WebDriver driver = new FirefoxDriver();
-		WebDriver driver = new ChromeDriver();
+		//		WebDriver driver = new ChromeDriver();
+
+		hub.setupDriver("chrome");
+		WebDriver driver = hub.getDriver();
+		WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {
 			driver.get(URL_TEAMS);
@@ -54,7 +55,8 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			log.info("Title: " + driver.getTitle());
 
 			// Team Links
-			final List<WebElement> teamLinks = driver.findElements(BY_ROSTER_LINK);
+			final List<WebElement> teamLinks = wait.until(
+					ExpectedConditions.presenceOfAllElementsLocatedBy(BY_ROSTER_LINK));
 
 			for (WebElement teamLink : teamLinks) {
 
@@ -72,15 +74,14 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			}
 
 			List<Team> teams = (List<Team>) teamRespository.findAll();
-//			WebDriverWait wait = new WebDriverWait(driver, 90);
+			//			WebDriverWait wait = new WebDriverWait(driver, 90);
 			for (Team team : teams) {
 				// Get Roster URL
 				driver.get(URL_ESPN + ROSTER_LINK + team.getShortCode() + "/" + team.getLongCode());
 
-				// Players Links			
-				final List<WebElement> playerLinks = driver.findElements(BY_PLAYER_LINK);
-//				final List<WebElement> playerLinks = wait.until(
-//						ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_PLAYER_LINK));
+				// Players Links
+				final List<WebElement> playerLinks = wait.until(
+						ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PLAYER_LINK));
 
 				for (WebElement playerLink : playerLinks) {
 					String hrefPlayer = playerLink.getAttribute("href");

@@ -22,8 +22,8 @@ public class StatisticParserController {
 	public String getStatistics() throws MalformedURLException {
 
 		log.info("Inicio parseo staistics");
-		LocalDate dateTimeFrom = LocalDate.of(2017, Month.OCTOBER, 20);
-		LocalDate dateTimeTo = LocalDate.of(2017, Month.OCTOBER, 21);
+		LocalDate dateTimeFrom = LocalDate.of(2017, Month.OCTOBER, 22);
+		LocalDate dateTimeTo = LocalDate.of(2017, Month.OCTOBER, 30);
 		service.getStatistics(dateTimeFrom, dateTimeTo);
 		log.info("Fin parseo statistics");
 

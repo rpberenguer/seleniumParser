@@ -45,7 +45,7 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 			email.sendKeys("rpberenguer@gmail.com");
 
 			final WebElement password = driver.findElement(BY_PASSWORD_INPUT);
-			password.sendKeys("********");
+			password.sendKeys("8ad3aah4");
 
 			final WebElement signupButton = driver.findElement(BY_SUBMIT_LOGIN_BUTTON);
 			signupButton.click();
