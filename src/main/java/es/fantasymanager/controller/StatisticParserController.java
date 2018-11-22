@@ -1,13 +1,13 @@
 package es.fantasymanager.controller;
 
 import java.net.MalformedURLException;
-import java.time.LocalDate;
-import java.time.Month;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.fantasymanager.data.rest.request.StatisticRequest;
 import es.fantasymanager.services.StatisticParserService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,12 +19,10 @@ public class StatisticParserController {
 	private StatisticParserService service;
 
 	@PostMapping(value = "/parser/statistics")
-	public String getStatistics() throws MalformedURLException {
+	public String getStatistics(@RequestBody StatisticRequest request) throws MalformedURLException {
 
 		log.info("Inicio parseo staistics");
-		LocalDate dateTimeFrom = LocalDate.of(2017, Month.OCTOBER, 22);
-		LocalDate dateTimeTo = LocalDate.of(2017, Month.OCTOBER, 30);
-		service.getStatistics(dateTimeFrom, dateTimeTo);
+		service.getStatistics(request.getStartDate(), request.getEndDate());
 		log.info("Fin parseo statistics");
 
 		return "Parseo Statistics OK";
