@@ -7,9 +7,11 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import es.fantasymanager.utils.LocalDateDeserializer;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class StatisticRequest implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class StatisticRequest extends BaseSheduledCronJobRequest implements Serializable {
 
 	/**
 	 *
