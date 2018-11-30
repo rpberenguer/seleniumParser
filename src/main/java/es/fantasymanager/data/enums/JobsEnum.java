@@ -1,4 +1,4 @@
-package es.fantasymanager.scheduler.jobs;
+package es.fantasymanager.data.enums;
 
 import lombok.Getter;
 
