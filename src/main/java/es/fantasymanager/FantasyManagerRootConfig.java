@@ -1,8 +1,8 @@
 package es.fantasymanager;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 
 /**
@@ -10,20 +10,12 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
  * responsibilities context.
  */
 
-@SpringBootApplication(scanBasePackages = "es.fantasymanager")
-public class FantasyManagerRootConfig extends SpringBootServletInitializer {
-
-	public static void main(String[] args) throws Exception {
-		configureApplication(new SpringApplicationBuilder()).run(args);
-	}
-
-	private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
-		builder.sources(FantasyManagerRootConfig.class);
-		return builder;
-	}
-
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-		return configureApplication(builder);
+//@SpringBootApplication(scanBasePackages = "es.fantasymanager")
+@SpringBootApplication
+@EnableJpaRepositories
+public class FantasyManagerRootConfig  {
+	
+	public static void main(String[] args) {
+		SpringApplication.run(FantasyManagerRootConfig.class, args);
 	}
 }

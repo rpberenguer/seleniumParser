@@ -24,7 +24,8 @@ public class SeleniumGridDockerHub {
 
 
 		//Set Browser to ThreadLocalMap
-		driver.set(new RemoteWebDriver(new URL("http://192.168.99.100:30287/wd/hub"), capabilities));
+		driver.set(new RemoteWebDriver(new URL("http://192.168.99.100:31971/wd/hub"), capabilities));
+//		driver.set(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities));
 	}
 
 

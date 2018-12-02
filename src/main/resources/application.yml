@@ -9,7 +9,7 @@ spring:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/fantasymanager?useSSL=false
     username: fm
-    password: fantasymanager2018
+    password: aaaaa
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
@@ -17,4 +17,7 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org.quartz.threadPool.threadCount: 5

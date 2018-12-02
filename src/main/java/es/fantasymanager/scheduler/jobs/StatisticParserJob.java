@@ -32,10 +32,10 @@ public class StatisticParserJob implements Job {
 
 		try {
 			JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-			String dateTimeFrom = jobDataMap.getString("dateTimeFrom");
-			String dateTimeTo = jobDataMap.getString("dateTimeTo");
+			LocalDate startDate = (LocalDate) jobDataMap.get("startDate");
+			LocalDate endDate = (LocalDate) jobDataMap.get("endDate");
 
-			service.getStatistics(LocalDate.parse(dateTimeFrom), LocalDate.parse(dateTimeTo));;
+			service.getStatistics(startDate, endDate);
 
 		} catch (MalformedURLException e) {
 			throw new JobExecutionException(e);

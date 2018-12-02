@@ -10,36 +10,36 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.fantasymanager.data.rest.request.BaseSheduledCronJobRequest;
-import es.fantasymanager.data.rest.request.TradeRequest;
+import es.fantasymanager.data.rest.request.StatisticRequest;
 import es.fantasymanager.data.rest.response.ScheduleResponse;
-import es.fantasymanager.scheduler.jobs.TradeParserJob;
+import es.fantasymanager.scheduler.jobs.StatisticParserJob;
 
 @RestController
-public class TradeSchedulerController extends SchedulerController {
+public class StatisticSchedulerController extends SchedulerController {
 
 
-	@PostMapping("/trade")
-	public ResponseEntity<ScheduleResponse> scheduleTrade(@Valid @RequestBody TradeRequest tradeRequest) {
-		return super.schedule(tradeRequest);
+	@PostMapping("/statistic")
+	public ResponseEntity<ScheduleResponse> scheduleTrade(@Valid @RequestBody StatisticRequest statisticRequest) {
+		return super.schedule(statisticRequest);
 	}
 
 
 	@Override
 	public JobDataMap getJobDataMap(BaseSheduledCronJobRequest request) {
 		
-		TradeRequest tradeRequest = (TradeRequest) request;
+		StatisticRequest statisticRequest = (StatisticRequest) request;
+		
 		JobDataMap jobDataMap = new JobDataMap();
-
-		jobDataMap.put("playerToAdd", tradeRequest.getPlayerToAdd());
-		jobDataMap.put("playerToRemove", tradeRequest.getPlayerToRemove());
+		jobDataMap.put("startDate", statisticRequest.getStartDate());
+		jobDataMap.put("endDate", statisticRequest.getEndDate());
 
 		return jobDataMap;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T extends Job> Class<T> getJobClass() {
-		return (Class<T>) TradeParserJob.class;
+		return (Class<T>) StatisticParserJob.class;
 	}
 }
 

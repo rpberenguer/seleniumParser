@@ -5,6 +5,7 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.quartz.CronScheduleBuilder;
+import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -21,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.fantasymanager.data.rest.request.BaseSheduledCronJobRequest;
 import es.fantasymanager.data.rest.response.ScheduleResponse;
-import es.fantasymanager.scheduler.jobs.TradeParserJob;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -33,6 +33,7 @@ public abstract class SchedulerController {
 	private Scheduler scheduler;
 
 	public abstract JobDataMap getJobDataMap(BaseSheduledCronJobRequest request);
+	public abstract <T extends Job> Class<T> getJobClass();
 
 	public ResponseEntity<ScheduleResponse> schedule(@Valid @RequestBody BaseSheduledCronJobRequest request) {
 		try {
@@ -41,14 +42,14 @@ public abstract class SchedulerController {
 			scheduler.scheduleJob(jobDetail, trigger);
 
 			ScheduleResponse scheduleResponse = new ScheduleResponse(true,
-					jobDetail.getKey().getName(), jobDetail.getKey().getGroup(), "Trade Scheduled Successfully!");
+					jobDetail.getKey().getName(), jobDetail.getKey().getGroup(), "Job Scheduled Successfully!");
 			return ResponseEntity.ok(scheduleResponse);
 
 		} catch (SchedulerException ex) {
-			log.error("Error scheduling trade", ex);
+			log.error("Error scheduling job", ex);
 
 			ScheduleResponse scheduleEmailResponse = new ScheduleResponse(false,
-					"Error scheduling trade. Please try later!");
+					"Error scheduling job. Please try later!");
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(scheduleEmailResponse);
 		}
 	}
@@ -57,7 +58,7 @@ public abstract class SchedulerController {
 
 		JobDataMap jobDataMap = getJobDataMap(request);
 
-		return JobBuilder.newJob(TradeParserJob.class)
+		return JobBuilder.newJob(this.getJobClass())
 				.withIdentity(UUID.randomUUID().toString(), "trade-jobs")
 				.withDescription("Trade Parser Job")
 				.usingJobData(jobDataMap)
