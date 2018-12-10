@@ -30,11 +30,13 @@ public class Player  {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "PLAYER_ID")
 	private Integer playerId;
 
-	@Column(nullable = false, length = 100)
+	@Column(name ="NAME", nullable = false, length = 100)
 	private String name;
 
+	@Column(name = "NBA_ID")
 	private String nbaId;
 
 	@ManyToOne(cascade = CascadeType.MERGE)
