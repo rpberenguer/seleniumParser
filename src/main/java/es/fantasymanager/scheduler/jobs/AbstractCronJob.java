@@ -6,6 +6,12 @@ import org.quartz.JobDetail;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.JobDetailImpl;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+
+import es.fantasymanager.configuration.quartz.QuartzConfiguration;
 
 /**
  * Abstract class for cron jobs that wrap the job execution, job details and job scheduler creation.

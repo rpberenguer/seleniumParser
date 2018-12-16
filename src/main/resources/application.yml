@@ -8,8 +8,8 @@ spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:3306/fantasymanager?useSSL=false
-    username: fm
-    password: aaaaa
+    username: fantasymanager
+    password: fantasymanager
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
@@ -21,3 +21,11 @@ spring:
     job-store-type: jdbc
     properties:
       org.quartz.threadPool.threadCount: 5
+
+configuration:
+  quartz:
+    instanceId: ${random.int[1,99999]}      
+    
+scheduled:
+  parser:
+    statistics: 0 0 7 * * ? # 7am once a day     

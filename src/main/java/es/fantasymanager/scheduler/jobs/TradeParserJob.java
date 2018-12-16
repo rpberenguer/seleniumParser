@@ -12,6 +12,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.fantasymanager.data.enums.JobsEnum;
 import es.fantasymanager.services.TradeParserService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,8 +21,10 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
-public class TradeParserJob implements Job {
+public class TradeParserJob extends AbstractCronJob implements Job {
 
+	private String cronExpression;
+	
 	@Autowired
 	TradeParserService service;
 
@@ -40,4 +43,25 @@ public class TradeParserJob implements Job {
 			throw new JobExecutionException(e);
 		}
 	}
+	
+    @Override
+    public String getCronExpression() {
+        return this.cronExpression;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends Job> Class<T> getJobClass() {
+        return (Class<T>) StatisticParserJob.class;
+    }
+    
+	@Override
+	public String getName() {
+		return JobsEnum.STATISTIC_PARSER.getName();
+	}
+
+	@Override
+	public String getDescription() {
+		return JobsEnum.STATISTIC_PARSER.getDescription();
+	} 
 }
