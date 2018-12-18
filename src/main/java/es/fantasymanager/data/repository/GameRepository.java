@@ -11,4 +11,6 @@ public interface GameRepository extends CrudRepository<Game, Integer> {
 
 	List<Game> findAllByOrderByDateDesc();
 	List<Game> findByDateBetween(Date from, Date to);
+	
+	Game findByGameId(Integer id);
 }

@@ -1,79 +1,49 @@
 package es.fantasymanager.controller;
 
-import java.util.UUID;
+import java.util.function.Function;
 
 import javax.validation.Valid;
 
-import org.quartz.CronScheduleBuilder;
-import org.quartz.Job;
-import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.Trigger;
-import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.fantasymanager.data.business.SchedulerTaskData;
+import es.fantasymanager.data.enums.JobsEnum;
 import es.fantasymanager.data.rest.request.BaseSheduledCronJobRequest;
-import es.fantasymanager.data.rest.response.ScheduleResponse;
-import lombok.extern.slf4j.Slf4j;
+import es.fantasymanager.services.SchedulerService;
 
 @RestController
 @RequestMapping(path = "/schedule")
-@Slf4j
 public abstract class SchedulerController {
 
 	@Autowired
-	private Scheduler scheduler;
+    private SchedulerService schedulerService;
 
 	public abstract JobDataMap getJobDataMap(BaseSheduledCronJobRequest request);
-	public abstract <T extends Job> Class<T> getJobClass();
 
-	public ResponseEntity<ScheduleResponse> schedule(@Valid @RequestBody BaseSheduledCronJobRequest request) {
+	public void schedule(@Valid @RequestBody BaseSheduledCronJobRequest request) {
+		
 		try {
-			JobDetail jobDetail = buildJobDetail(request);
-			Trigger trigger = buildJobTrigger(jobDetail, request);
-			scheduler.scheduleJob(jobDetail, trigger);
-
-			ScheduleResponse scheduleResponse = new ScheduleResponse(true,
-					jobDetail.getKey().getName(), jobDetail.getKey().getGroup(), "Job Scheduled Successfully!");
-			return ResponseEntity.ok(scheduleResponse);
-
-		} catch (SchedulerException ex) {
-			log.error("Error scheduling job", ex);
-
-			ScheduleResponse scheduleEmailResponse = new ScheduleResponse(false,
-					"Error scheduling job. Please try later!");
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(scheduleEmailResponse);
+			schedulerService.scheduleTask(this.requestToData.apply(request));
+		} catch (SchedulerException e) {
+			e.printStackTrace();
 		}
 	}
-
-	private JobDetail buildJobDetail(BaseSheduledCronJobRequest request) {
-
-		JobDataMap jobDataMap = getJobDataMap(request);
-
-		return JobBuilder.newJob(this.getJobClass())
-				.withIdentity(UUID.randomUUID().toString(), "trade-jobs")
-				.withDescription("Trade Parser Job")
-				.usingJobData(jobDataMap)
-				.storeDurably()
-				.build();
-	}
-
-	private Trigger buildJobTrigger(JobDetail jobDetail, BaseSheduledCronJobRequest request) {
-		return TriggerBuilder.newTrigger()
-				.forJob(jobDetail)
-				.withIdentity(jobDetail.getKey().getName(), "trade-triggers")
-				.withDescription("Trade Parser Trigger")
-				.withSchedule(CronScheduleBuilder.cronSchedule(request.getCronExpression()))
-				.build();
-	}
+	
+    Function<BaseSheduledCronJobRequest, SchedulerTaskData> requestToData = input -> {
+    	SchedulerTaskData output = new SchedulerTaskData();
+    	
+    	JobDataMap jobDataMap = getJobDataMap(input);
+    	output.setJobDataMap(jobDataMap);
+    	output.setJobEnum(JobsEnum.fromName(input.getJobName()));
+    	output.setCronExpression(input.getCronExpression());
+    	
+		return output;
+    };
 }
 
 
