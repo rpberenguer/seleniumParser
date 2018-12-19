@@ -59,11 +59,10 @@ public class SchedulerServiceImpl implements SchedulerService {
 
     	ScheduledTaskEntity entity = this.dataToEntity.apply(task);
     	entity.setUuid(UUID.randomUUID());
-
     	entity = scheduledTasksRepository.save(entity);
 
     	task.setUuid(entity.getUuid());
-    	task.setScheduledTaskId(entity.getScheduledTaskId());
+//    	task.setScheduledTaskId(entity.getScheduledTaskId());
 
     	// The task must be scheduled at the end to guarantee transaction roll back.
     	this.scheduleJobBuilder.schedule(task);
@@ -79,8 +78,8 @@ public class SchedulerServiceImpl implements SchedulerService {
     	entity = scheduledTasksRepository.save(entity);
 
     	// The task name must be the previous one to avoid duplicating jobs and triggers.
-    	task.setScheduledTaskId(entity.getScheduledTaskId());
     	task.setUuid(entity.getUuid());
+    	task.setScheduledTaskId(entity.getScheduledTaskId());
     	this.scheduleJobBuilder.schedule(task);
     	return task;
     }

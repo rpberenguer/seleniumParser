@@ -32,7 +32,7 @@ public class ScheduleJobBuilder {
 		JobsEnum jobEnum = task.getJobEnum();
 			
 		JobDetail job = JobBuilder.newJob(jobEnum.getClazz())
-			.withIdentity(jobEnum.getName())
+			.withIdentity(task.getUuid().toString(), jobEnum.getName())
 			.withDescription(jobEnum.getDescription())
 			.usingJobData(task.getJobDataMap())
 			.storeDurably(true)
@@ -40,7 +40,7 @@ public class ScheduleJobBuilder {
 
         Trigger trigger = TriggerBuilder.newTrigger()
     		.forJob(job)
-        	.withIdentity(jobEnum.getName())
+        	.withIdentity(job.getKey().getName(), jobEnum.getName())
             .withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()))
             .build();
 

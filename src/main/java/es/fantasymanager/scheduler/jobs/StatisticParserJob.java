@@ -40,10 +40,15 @@ public class StatisticParserJob extends AbstractCronJob implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		log.info("Executing Job {}", this.getClass().getName());
 
-		try {
+		try {			
+			LocalDate startDate = LocalDate.now();
+			LocalDate endDate = LocalDate.now();
+			
 			JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-			LocalDate startDate = (LocalDate) jobDataMap.get("startDate");
-			LocalDate endDate = (LocalDate) jobDataMap.get("endDate");
+			if(jobDataMap != null && !jobDataMap.isEmpty()) {
+				startDate = (LocalDate) jobDataMap.get("startDate");
+				endDate = (LocalDate) jobDataMap.get("endDate");
+			}
 
 			service.getStatistics(startDate, endDate);
 
