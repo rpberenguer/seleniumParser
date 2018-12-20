@@ -6,15 +6,23 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.ElementNotVisibleException;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.FluentWait;
+import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,52 +71,55 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 		//			driver = new ChromeDriver();
 		hub.setupDriver("chrome");
 		WebDriver driver = hub.getDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		LocalDate from = dateTimeFrom;
 
 		try {
-			driver.get(URL_SCHEDULE + dateTimeFrom.format(formatter));
-
-			// Print the title
-			log.debug("Title: {}", driver.getTitle());
-
-			// Tables with all week games
-			final List<WebElement> tableDayList = wait.until(
-					ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_SCHEDULE_TABLE_DAY));
-
-			for (WebElement tableDay : tableDayList) {
-				List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
-				for (WebElement gameLink : gameByDays) {
-					log.debug("Game link {}", gameLink);
-
-					Game game = new Game();
-
-					final String gameId = StringUtils.substringAfter(gameLink.getAttribute("href"), GAME_LINK);
-					game.setNbaId(gameId);
-
-					final Date date = Date.from(dateTimeFrom.atStartOfDay(ZoneId.systemDefault()).toInstant());
-					game.setDate(date);
-
-					gameRepository.save(game);
+			boolean isGamesParserEnd = false;
+			
+			do {
+//				WebDriverWait wait = new WebDriverWait(driver, 90);
+				driver.get(URL_SCHEDULE + dateTimeFrom.format(formatter));
+	
+				// Print the title
+				log.debug("Title: {}", driver.getTitle());
+	
+				// Tables with all week games
+				final List<WebElement> tableDayList = waitFor(driver, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_SCHEDULE_TABLE_DAY), "Table not found correctly.");
+	
+				for (WebElement tableDay : tableDayList) {
+					List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
+					for (WebElement gameLink : gameByDays) {
+						log.debug("Game link {}", gameLink);
+	
+						Game game = new Game();
+	
+						final String gameId = StringUtils.substringAfter(gameLink.getAttribute("href"), GAME_LINK);
+						game.setNbaId(gameId);
+	
+						final Date date = Date.from(dateTimeFrom.atStartOfDay(ZoneId.systemDefault()).toInstant());
+						game.setDate(date);
+	
+						gameRepository.save(game);
+					}
+	
+					// Sumamos un día a la fecha inicial
+					dateTimeFrom = dateTimeFrom.plusDays(1);
+	
+					// Si hemos superado la fecha fin hemos llegado al final del
+					// parseo
+					if (dateTimeFrom.isAfter(dateTimeTo)) {
+						log.debug("Partidos obtenidos.");
+						isGamesParserEnd = true;
+						break;
+					}
 				}
-
-				// Sumamos un día a la fecha inicial
-				dateTimeFrom = dateTimeFrom.plusDays(1);
-
-				// Si hemos superado la fecha fin hemos llegado al final del
-				// parseo
-				if (dateTimeFrom.isAfter(dateTimeTo)) {
-					log.debug("Partidos obtenidos.");
-					break;
-				}
-			}
+			} while (!isGamesParserEnd);
 
 			// Empezamos el parseo de statistics de cada partido
 			log.debug("Empezamos parseo de statistics");
 
 			List<Game> games = gameRepository.findByDateBetween(DateUtils.asDate(from), DateUtils.asDate(dateTimeTo));
-			//			List<Game> games = (List<Game>) gameRepository.findAll();
 
 			for (Game game : games) {
 				// Get Game
@@ -117,9 +128,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 				driver.get(URL_ESPN + BOXSCORE_LINK + game.getNbaId());
 
 				// Team Home
-				//				WebElement teamHomeDiv = driver.findElement(BY_TEAM_HOME_DIV);
-				WebElement teamHomeDiv = wait.until(
-						ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV));
+				WebElement teamHomeDiv = waitFor(driver, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV), "Team Home not found correctly");
 				WebElement scoreHomeDiv = teamHomeDiv.findElement(BY_SCORE_HOME_DIV);
 				WebElement teamHomeLink = teamHomeDiv.findElement(BY_TEAM_LINK);
 				String teamHomeShortCode = StringUtils.substringBetween(teamHomeLink.getAttribute("href"), TEAM_LINK, "/");
@@ -127,8 +136,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 				Team teamHome = teamRepository.findByShortCode(teamHomeShortCode);
 
 				// Team Away
-				WebElement teamAwayDiv = wait.until(
-						ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV));
+				WebElement teamAwayDiv = waitFor(driver, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV), "Team Away not found correctly");
 				WebElement scoreAwayDiv = teamAwayDiv.findElement(BY_SCORE_AWAY_DIV);
 				WebElement teamAwayLink = teamAwayDiv.findElement(BY_TEAM_LINK);
 				String teamAwayShortCode = StringUtils.substringBetween(teamAwayLink.getAttribute("href"), TEAM_LINK, "/");
@@ -143,8 +151,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 				gameRepository.save(game);
 
 				// Statistics Home
-				List<WebElement> statisticHomeRows = wait.until(
-						ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_HOME_ROWS));
+				List<WebElement> statisticHomeRows =  waitFor(driver, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_HOME_ROWS), "Statistic Home Rows not found correctly");
 				for (WebElement statisticRow : statisticHomeRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
 						Statistic statistic = parseStatisticRow(statisticRow);
@@ -158,8 +165,7 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 				}
 
 				// Statistics Away
-				List<WebElement> statisticAwayRows = wait.until(
-						ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_AWAY_ROWS));
+				List<WebElement> statisticAwayRows =  waitFor(driver, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_AWAY_ROWS), "Statistic Away Rows not found correctly");
 				for (WebElement statisticRow : statisticAwayRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
 						Statistic statistic = parseStatisticRow(statisticRow);
@@ -266,5 +272,19 @@ public class StatisticParserServiceImpl implements StatisticParserService, Const
 		} else {
 			return null;
 		}
+	}
+	
+	private <T> T waitFor(WebDriver driver, ExpectedCondition<T> condition, String errorMessage) {
+		Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(90, TimeUnit.SECONDS)
+				.ignoring(NullPointerException.class)
+				.ignoring(StaleElementReferenceException.class)
+				.ignoring(NoSuchElementException.class)
+				.ignoring(ElementNotVisibleException.class)
+				.ignoring(WebDriverException.class)
+//				.pollingEvery(5000, TimeUnit.MILLISECONDS)
+				.withMessage(errorMessage);
+		
+		T result = wait.until(condition);
+		return result;
 	}
 }
