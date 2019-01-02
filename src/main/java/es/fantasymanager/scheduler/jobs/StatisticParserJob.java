@@ -41,8 +41,8 @@ public class StatisticParserJob extends AbstractCronJob implements Job {
 		log.info("Executing Job {}", this.getClass().getName());
 
 		try {			
-			LocalDate startDate = LocalDate.now();
-			LocalDate endDate = LocalDate.now();
+			LocalDate startDate = LocalDate.now().minusDays(1);
+			LocalDate endDate = LocalDate.now().minusDays(1);
 			
 			JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 			if(jobDataMap != null && !jobDataMap.isEmpty()) {

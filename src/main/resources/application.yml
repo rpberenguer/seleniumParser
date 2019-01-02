@@ -21,6 +21,14 @@ spring:
     job-store-type: jdbc
     properties:
       org.quartz.threadPool.threadCount: 5
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin    
+  jms:
+    listener:
+      concurrency: 4
+      max-concurrency: 4
 
 configuration:
   quartz:
