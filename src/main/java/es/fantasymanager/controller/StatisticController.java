@@ -23,9 +23,9 @@ public class StatisticController {
 	@PostMapping(value = "/statistics")
 	public List<StatisticAvgDto> getStatisticsAvg(@RequestBody StatisticRequest request) throws MalformedURLException {
 
-		log.info("Inicio parseo staistics");
+		log.info("Inicio get media estadisticas");
 		List<StatisticAvgDto> statisticsAvg = service.getStatisticsAvg(request.getStartDate(), request.getEndDate());
-		log.info("Fin parseo statistics");
+		log.info("Fin get media estadisticas");
 
 		return statisticsAvg;
 	}

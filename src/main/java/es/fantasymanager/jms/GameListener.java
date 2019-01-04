@@ -1,5 +1,6 @@
 package es.fantasymanager.jms;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -61,6 +62,9 @@ public class GameListener implements Constants {
 
 		// Lista donde guardar los gameIds
 		List<String> gameIds = new ArrayList<>();
+		
+		// Timing
+		long startTimeInSec = Instant.now().getEpochSecond();
 
 		try {
 			driver.get(URL_SCHEDULE + startDate.format(formatter));
@@ -71,13 +75,22 @@ public class GameListener implements Constants {
 
 				List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
 				for (WebElement gameLink : gameByDays) {
-					log.info("Game link {}", gameLink.getAttribute("href"));
+					String href = gameLink.getAttribute("href");
+					log.info("Game link {}", href);
 
-					Game game = new Game();
+					final String nbaId = StringUtils.substringAfter(href, GAME_LINK);
+					
+					Game game = gameRepository.findByNbaId(nbaId);
+					if(game != null) {
+						log.info("Partido ya insertado en BDD: {}", nbaId);
+						break;
+					}
+					else {
+						game = new Game();
+					}
 
-					final String gameId = StringUtils.substringAfter(gameLink.getAttribute("href"), GAME_LINK);
-					gameIds.add(gameId);
-					game.setNbaId(gameId);
+					gameIds.add(nbaId);
+					game.setNbaId(nbaId);
 
 					final Date date = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 					game.setDate(date);
@@ -91,7 +104,6 @@ public class GameListener implements Constants {
 				// Si hemos superado la fecha fin hemos llegado al final del
 				// parseo
 				if (startDate.isAfter(endDate)) {
-					log.info("Partidos obtenidos entre las fechas {} y {}.", startDate, endDate);
 					break;
 				}
 			}
@@ -99,6 +111,9 @@ public class GameListener implements Constants {
 			// Cerramos driver
 			driver.close();
 		}
+		
+		Long endTimeInSec = Instant.now().getEpochSecond();
+		log.info("Partidos obtenidos entre las fechas {} y {}. Tiempo {}", gameMessage.getStartDate(), gameMessage.getEndDate(), endTimeInSec - startTimeInSec);
 
 		// Enviamos mensaje cola de estadisticas
 		StatisticJmsMessageData statisticMessage = new StatisticJmsMessageData();

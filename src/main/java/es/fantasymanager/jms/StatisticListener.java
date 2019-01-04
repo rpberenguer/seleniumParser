@@ -1,5 +1,6 @@
 package es.fantasymanager.jms;
 
+import java.time.Instant;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -59,6 +60,9 @@ public class StatisticListener implements Constants {
 		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
 		WebDriverWait wait = new WebDriverWait(driver, 90);
+		
+		// Timing
+		long startTimeInSec = Instant.now().getEpochSecond();
 
 		try {
 			for (String gameId : statisticMessage.getGameIds()) {
@@ -76,6 +80,7 @@ public class StatisticListener implements Constants {
 						"/");
 
 				Team teamHome = teamRepository.findByShortCode(teamHomeShortCode);
+				log.info("Team Home {}", teamHome);
 
 				// Team Away
 //	WebElement teamAwayDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV), "Team Away not found correctly");
@@ -86,6 +91,7 @@ public class StatisticListener implements Constants {
 						"/");
 
 				Team teamAway = teamRepository.findByShortCode(teamAwayShortCode);
+				log.info("Team Away {}", teamAway);
 
 				Game game = gameRepository.findByNbaId(gameId);
 				game.setTeamHome(teamHome);
@@ -101,11 +107,10 @@ public class StatisticListener implements Constants {
 				for (WebElement statisticRow : statisticHomeRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
 						Statistic statistic = parseStatisticRow(statisticRow);
-						log.debug("Statistic {}", statistic);
 						if (statistic != null) {
 							statistic.setGame(game);
 							statistic = statisticRepository.save(statistic);
-							log.debug(statistic.toString());
+							log.debug("Statistic Home {}", statistic);
 						}
 					}
 				}
@@ -116,11 +121,10 @@ public class StatisticListener implements Constants {
 				for (WebElement statisticRow : statisticAwayRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
 						Statistic statistic = parseStatisticRow(statisticRow);
-						log.debug("Statistic {}", statistic);
 						if (statistic != null) {
 							statistic.setGame(game);
 							statistic = statisticRepository.save(statistic);
-							log.debug(statistic.toString());
+							log.debug("Statistic Away {}", statistic);
 						}
 					}
 				}
@@ -131,7 +135,8 @@ public class StatisticListener implements Constants {
 			driver.close();
 		}
 		
-		log.info("Statistic Parser Ended! " + Thread.currentThread().getId());
+		Long endTimeInSec = Instant.now().getEpochSecond();
+		log.info("Estadisticas obtenidas para los partidos {}. Tiempo {}", statisticMessage.getGameIds(), endTimeInSec - startTimeInSec);
 	}
 
 	private Statistic parseStatisticRow(WebElement statisticRow) {

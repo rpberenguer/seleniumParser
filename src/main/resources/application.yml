@@ -1,6 +1,13 @@
 server:
   port: 8090
   
+logging:
+  level:
+    root: warn
+    org.springframework.web: info
+    org.hibernate: error
+    es.fantasymanager: debug
+  
 spring:
   h2:
     console:
@@ -13,7 +20,7 @@ spring:
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
-    show-sql: true
+    show-sql: false
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -27,8 +34,8 @@ spring:
     password: admin    
   jms:
     listener:
-      concurrency: 4
-      max-concurrency: 4
+      concurrency: 2
+      max-concurrency: 2
 
 configuration:
   quartz:
@@ -36,4 +43,4 @@ configuration:
     
 scheduled:
   parser:
-    statistics: 0 0 7 * * ? # 7am once a day     
+    statistics: 0 30 8 * * ? # 8.30am once a day     
