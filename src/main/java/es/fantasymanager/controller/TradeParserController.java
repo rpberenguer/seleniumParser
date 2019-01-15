@@ -19,7 +19,7 @@ public class TradeParserController {
 	@PostMapping(value = "/parser/trade")
 	public String trade(@RequestBody TradeRequest request) throws IOException {
 
-		service.doTrade(request.getPlayerToAdd(), request.getPlayerToRemove());
+		service.doTrade(request.getTradeList());
 
 		return "Parseo OK";
 	}

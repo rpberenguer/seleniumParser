@@ -24,8 +24,7 @@ public class TradeSchedulerController extends SchedulerController {
 		TradeRequest tradeRequest = (TradeRequest) request;
 		JobDataMap jobDataMap = new JobDataMap();
 
-		jobDataMap.put("playerToAdd", tradeRequest.getPlayerToAdd());
-		jobDataMap.put("playerToRemove", tradeRequest.getPlayerToRemove());
+		jobDataMap.put("tradeList", tradeRequest.getTradeList());
 
 		return jobDataMap;
 	}

@@ -34,7 +34,7 @@ public class SeleniumParserTest implements Constants {
 
 		String playerToAdd = "3134907";
 		String playerToRemove = "3899663";
-		tradeService.doTrade(playerToAdd, playerToRemove);
+//		tradeService.doTrade(playerToAdd, playerToRemove);
 	}
 
 	@Test

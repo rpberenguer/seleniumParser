@@ -4,6 +4,7 @@
 package es.fantasymanager.scheduler.jobs;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -12,6 +13,7 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import es.fantasymanager.data.business.TradeData;
 import es.fantasymanager.data.enums.JobsEnum;
 import es.fantasymanager.services.TradeParserService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +36,9 @@ public class TradeParserJob extends AbstractCronJob implements Job {
 
 		try {
 			JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-			String playerToAdd = jobDataMap.getString("playerToAdd");
-			String playerToRemove = jobDataMap.getString("playerToRemove");
+			List<TradeData> tradeList = (List<TradeData>) jobDataMap.get("tradeList");
 
-			service.doTrade(playerToAdd, playerToRemove);
+			service.doTrade(tradeList);
 
 		} catch (IOException e) {
 			throw new JobExecutionException(e);

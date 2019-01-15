@@ -1,7 +1,9 @@
 package es.fantasymanager.data.rest.request;
 
 import java.io.Serializable;
+import java.util.List;
 
+import es.fantasymanager.data.business.TradeData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -14,7 +16,5 @@ public class TradeRequest extends BaseSheduledCronJobRequest implements Serializ
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private String playerToAdd;
-
-	private String playerToRemove;
+	private List<TradeData> tradeList;
 }

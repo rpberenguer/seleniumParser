@@ -72,5 +72,6 @@ public interface Constants {
 	 *******************************/
 	public static final String GAME_QUEUE = "game-queue";
 	public static final String STATISTIC_QUEUE = "statistic-queue";
+	public static final String TRADE_QUEUE = "trade-queue";
 
 }
