@@ -43,4 +43,8 @@ configuration:
     
 scheduled:
   parser:
-    statistics: 0 30 8 * * ? # 8.30am once a day     
+    statistics: 0 0 8 * * ? # 8am once a day     
+    
+telegram:
+  token: 714506880:AAEQrW0ifef2fDZzlFtlcHSuWHflNaIWN8I
+  chatId: fantasyManagerChannel

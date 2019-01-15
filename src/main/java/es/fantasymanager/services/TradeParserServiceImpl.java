@@ -1,6 +1,6 @@
 package es.fantasymanager.services;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.time.Instant;
 
 import org.openqa.selenium.By;
@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import es.fantasymanager.utils.Constants;
@@ -22,8 +23,13 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 //	@Autowired
 //	private SeleniumGridDockerHub hub;
 
+	@Autowired
+	private transient TelegramService telegramService;
+
+//	private Object lock1 = new Object();
+
 	@Override
-	public void doTrade(String playerToAdd, String playerToRemove) throws MalformedURLException {
+	public void doTrade(String playerToAdd, String playerToRemove) throws IOException {
 
 		log.info("Trade Started! " + Thread.currentThread().getId());
 
@@ -34,16 +40,20 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		// Driver
 		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
+		// Print the webdriver
+		log.info("Webdriver: " + driver.toString());
 		WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Timing
 		long startTimeInSec = Instant.now().getEpochSecond();
 
 		try {
+//			synchronized (lock1) {
 			driver.get(URL_ADD_PLAYERS);
+
+			// Wait for frame
 			wait.until(ExpectedConditions.frameToBeAvailableAndSwitchToIt(LOGIN_IFRAME));
 			driver.switchTo().defaultContent(); // you are now outside both frames
-			// Wait for frame
 
 			driver.switchTo().frame(LOGIN_IFRAME);
 			driver.getPageSource();
@@ -52,21 +62,23 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 			log.info("Title: " + driver.getTitle());
 
 			// Login
-			final WebElement email = driver.findElement(BY_EMAIL_INPUT);
+			final WebElement email = wait.until(ExpectedConditions.elementToBeClickable(BY_EMAIL_INPUT));
+			email.click();
 			email.sendKeys("rpberenguer@gmail.com");
 
-			final WebElement password = driver.findElement(BY_PASSWORD_INPUT);
+			final WebElement password = wait.until(ExpectedConditions.elementToBeClickable(BY_PASSWORD_INPUT));
+			password.click();
 			password.sendKeys("ilovethisgame&&&");
 
-			final WebElement signupButton = driver.findElement(BY_SUBMIT_LOGIN_BUTTON);
-			signupButton.click();
+			final WebElement signupButton = wait.until(ExpectedConditions.elementToBeClickable(BY_SUBMIT_LOGIN_BUTTON));
+//				signupButton.click();
+			((JavascriptExecutor) driver).executeScript("arguments[0].click();", signupButton);
 
 			log.info("Login ok!");
+//			}
 
 			driver.switchTo().defaultContent();
 //			WebDriverWait wait = new WebDriverWait(driver, 90);
-
-			log.info("Trade de {} por {}", playerToAdd, playerToRemove);
 
 			// Find (+) Add Player Linkg & click()
 			WebElement addPlayerLink = wait.until(
@@ -95,12 +107,26 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 //			confirmButton.click();
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmButton);
 
+			// Obtenemos tiempo
+			Long endTimeInSec = Instant.now().getEpochSecond();
+
+			String text = String.format("Trade de %s por %s, ok!. Tiempo %s segs.", playerToAdd, playerToRemove,
+					endTimeInSec - startTimeInSec);
+
+			// Logeamos + telegram
+			log.info(text);
+			telegramService.sendMessage(text);
+
+		} catch (Exception e) {
+
+			String text = String.format("Trade de %s por %s, ko.", playerToAdd, playerToRemove);
+
+			// Logeamos + telegram
+			log.error(text, e);
+			telegramService.sendMessage(text);
 		} finally {
 			// Close
-			driver.close();
+//			driver.close();
 		}
-
-		Long endTimeInSec = Instant.now().getEpochSecond();
-		log.info("Trade ok. Tiempo {}", endTimeInSec - startTimeInSec);
 	}
 }

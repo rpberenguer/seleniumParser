@@ -1,5 +1,6 @@
 package es.fantasymanager.jms;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import es.fantasymanager.data.repository.GameRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.data.repository.StatisticRepository;
 import es.fantasymanager.data.repository.TeamRepository;
+import es.fantasymanager.services.TelegramService;
 import es.fantasymanager.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 
@@ -50,9 +52,12 @@ public class StatisticListener implements Constants {
 	@Autowired
 	private transient StatisticRepository statisticRepository;
 
+	@Autowired
+	private transient TelegramService telegramService;
+
 	@JmsListener(destination = STATISTIC_QUEUE)
 	public void receiveMessage(@Payload StatisticJmsMessageData statisticMessage, @Headers MessageHeaders headers,
-			Message message, Session session) throws JMSException {
+			Message message, Session session) throws JMSException, IOException {
 
 		log.info("Received <---" + statisticMessage + "--->");
 
@@ -60,7 +65,7 @@ public class StatisticListener implements Constants {
 		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
 		WebDriverWait wait = new WebDriverWait(driver, 90);
-		
+
 		// Timing
 		long startTimeInSec = Instant.now().getEpochSecond();
 
@@ -134,9 +139,14 @@ public class StatisticListener implements Constants {
 			// Cerramos driver
 			driver.close();
 		}
-		
+
 		Long endTimeInSec = Instant.now().getEpochSecond();
-		log.info("Estadisticas obtenidas para los partidos {}. Tiempo {}", statisticMessage.getGameIds(), endTimeInSec - startTimeInSec);
+
+		// Logeamos + telegram
+		String text = String.format("Estadisticas obtenidas para los partidos %s. Tiempo %s segs.",
+				statisticMessage.getGameIds(), endTimeInSec - startTimeInSec);
+		log.info(text);
+		telegramService.sendMessage(text);
 	}
 
 	private Statistic parseStatisticRow(WebElement statisticRow) {

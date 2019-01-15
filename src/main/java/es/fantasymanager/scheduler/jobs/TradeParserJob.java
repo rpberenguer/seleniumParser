@@ -3,7 +3,7 @@
  */
 package es.fantasymanager.scheduler.jobs;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TradeParserJob extends AbstractCronJob implements Job {
 
 	private String cronExpression;
-	
+
 	@Autowired
 	TradeParserService service;
 
@@ -39,22 +39,22 @@ public class TradeParserJob extends AbstractCronJob implements Job {
 
 			service.doTrade(playerToAdd, playerToRemove);
 
-		} catch (MalformedURLException e) {
+		} catch (IOException e) {
 			throw new JobExecutionException(e);
 		}
 	}
-	
-    @Override
-    public String getCronExpression() {
-        return this.cronExpression;
-    }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T extends Job> Class<T> getJobClass() {
-        return (Class<T>) StatisticParserJob.class;
-    }
-    
+	@Override
+	public String getCronExpression() {
+		return this.cronExpression;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends Job> Class<T> getJobClass() {
+		return (Class<T>) StatisticParserJob.class;
+	}
+
 	@Override
 	public String getName() {
 		return JobsEnum.STATISTIC_PARSER.getName();
@@ -63,5 +63,5 @@ public class TradeParserJob extends AbstractCronJob implements Job {
 	@Override
 	public String getDescription() {
 		return JobsEnum.STATISTIC_PARSER.getDescription();
-	} 
+	}
 }

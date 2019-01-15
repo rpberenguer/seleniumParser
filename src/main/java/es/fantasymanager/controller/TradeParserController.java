@@ -1,6 +1,6 @@
 package es.fantasymanager.controller;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +17,7 @@ public class TradeParserController {
 	private TradeParserService service;
 
 	@PostMapping(value = "/parser/trade")
-	public String trade(@RequestBody TradeRequest request) throws MalformedURLException {
+	public String trade(@RequestBody TradeRequest request) throws IOException {
 
 		service.doTrade(request.getPlayerToAdd(), request.getPlayerToRemove());
 
