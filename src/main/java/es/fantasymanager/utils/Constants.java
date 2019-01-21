@@ -5,7 +5,8 @@ import org.openqa.selenium.By;
 public interface Constants {
 
 	public static final String URL_ESPN = "http://www.espn.com";
-	public static final String URL_ESPN_FANTASY = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
+//	public static final String URL_ESPN_FANTASY = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
+	public static final String URL_ROTOWORLD_NEWS = "http://www.rotoworld.com/playernews/nba/basketball-player-news";
 
 	/******************************
 	 *********** TRADE *************
@@ -63,6 +64,11 @@ public interface Constants {
 			.cssSelector("div.col.column-two.gamepackage-home-wrap table.mod-data tbody tr");
 	public static final By BY_STATISTIC_AWAY_ROWS = By
 			.cssSelector("div.col.column-one.gamepackage-away-wrap table.mod-data tbody tr");
+
+	/********************************
+	 ************ NEWS **************
+	 *******************************/
+	public static final By BY_ROTOWORL_NEWS_DIV = By.cssSelector("div.pb");
 
 	/********************************
 	 *********** SCHEDULER **********

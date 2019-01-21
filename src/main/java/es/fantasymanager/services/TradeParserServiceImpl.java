@@ -15,7 +15,6 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import es.fantasymanager.utils.Constants;
@@ -25,8 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TradeParserServiceImpl implements TradeParserService, Constants {
 
-	@Autowired
-	private JmsTemplate jmsTemplate;
+//	@Autowired
+//	private JmsTemplate jmsTemplate;
 
 	@Autowired
 	private transient TelegramService telegramService;
