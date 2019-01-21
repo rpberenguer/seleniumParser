@@ -25,8 +25,10 @@ public interface Constants {
 	public static final String REMOVE_PLAYER_LINK = ".//img[@src='http://a.espncdn.com/combiner/i?img=/i/headshots/NBA/players/full/"
 			+ "%s.png&w=96&h=70']/../../../../../td[3]/div/div/a";
 
+//	public static final By BY_CONTINUE_TRADE_BUTTON = By
+//			.cssSelector("div.flex.justify-between.items-center a:nth-of-type(2)");
 	public static final By BY_CONTINUE_TRADE_BUTTON = By
-			.cssSelector("div.flex.justify-between.items-center a:nth-of-type(2)");
+			.cssSelector("div.flex.mt7.pb7.justify-center.items-center a:nth-of-type(2)");
 	public static final By BY_SUBMIT_TRADE_BUTTON = By.cssSelector("input[name='btnSubmit'][value='Submit Roster'] ");
 	public static final By BY_CONFIRM_TRADE_BUTTON = By.cssSelector("a.btn.btn--custom.btn-confirm-action.mb3");
 

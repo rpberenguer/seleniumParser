@@ -4,7 +4,8 @@
 package es.fantasymanager.scheduler.jobs;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -13,7 +14,6 @@ import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import es.fantasymanager.data.business.TradeData;
 import es.fantasymanager.data.enums.JobsEnum;
 import es.fantasymanager.services.TradeParserService;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +30,15 @@ public class TradeParserJob extends AbstractCronJob implements Job {
 	@Autowired
 	TradeParserService service;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		log.info("Executing Job {}", this.getClass().getName());
 
 		try {
 			JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
-			List<TradeData> tradeList = (List<TradeData>) jobDataMap.get("tradeList");
-
-			service.doTrade(tradeList);
+			Map<String, String> tradeMap = (HashMap<String, String>) jobDataMap.get("tradeMap");
+			service.doTrade(tradeMap);
 
 		} catch (IOException e) {
 			throw new JobExecutionException(e);

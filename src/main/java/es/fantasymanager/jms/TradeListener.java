@@ -33,7 +33,10 @@ public class TradeListener implements Constants {
 	@Autowired
 	private transient TelegramService telegramService;
 
-	@JmsListener(destination = STATISTIC_QUEUE)
+//	@Autowired
+//	private SeleniumGridDockerHub hub;
+
+	@JmsListener(destination = TRADE_QUEUE)
 	public void receiveMessage(@Payload TradeJmsMessageData tradeMessage, @Headers MessageHeaders headers,
 			Message message, Session session) throws JMSException, IOException {
 
@@ -93,19 +96,31 @@ public class TradeListener implements Constants {
 			log.info("Player to add finded.");
 			addPlayerLink.click();
 
+			// Find alert message
+			WebElement divAlert = wait
+					.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div.alert.show")));
+			((JavascriptExecutor) driver).executeScript("arguments[0].style.visibility='hidden'", divAlert);
+
 			// Find checkBox to Remove Player
 			WebElement removePlayerLink = wait.until(ExpectedConditions.elementToBeClickable(
 					By.xpath(String.format(REMOVE_PLAYER_LINK, tradeMessage.getPlayerToRemove()))));
 
 			log.info("Player to remove finded.");
+//			removePlayerLink.click();
 			// js executor
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", removePlayerLink);
 
 			// Find continueButton
 			WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
+//			WebElement continueButton = wait
+//					.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.btn.btn--custom.action-buttons")));
 			log.info("Continue button finded.");
 //			continueButton.click();
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", continueButton);
+
+//			WebElement confirmPopup = wait.until(ExpectedConditions
+//					.visibilityOfElementLocated(By.cssSelector("div.jsx-857643447.confirm-modal__inner.pa4")));
+//			confirmPopup.click();
 
 			// Find confirmButton
 			WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));

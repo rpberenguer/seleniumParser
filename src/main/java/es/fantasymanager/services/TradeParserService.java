@@ -1,11 +1,9 @@
 package es.fantasymanager.services;
 
 import java.io.IOException;
-import java.util.List;
-
-import es.fantasymanager.data.business.TradeData;
+import java.util.Map;
 
 public interface TradeParserService {
 
-	public void doTrade(List<TradeData> tradeList) throws IOException;
+	public void doTrade(Map<String, String> tradeMap) throws IOException;
 }

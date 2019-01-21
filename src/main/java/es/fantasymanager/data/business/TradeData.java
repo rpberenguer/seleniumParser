@@ -10,7 +10,7 @@ public class TradeData implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1068021065628158280L;
 
 	private String playerToAdd;
 	private String playerToRemove;
