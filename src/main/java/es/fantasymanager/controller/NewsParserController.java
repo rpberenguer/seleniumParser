@@ -1,6 +1,13 @@
 package es.fantasymanager.controller;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,9 +27,16 @@ public class NewsParserController {
 	public String parseNews() throws MalformedURLException {
 
 		log.info("Inicio parseo news");
-		service.parseNews();
+//		service.parseNews();
+
+		ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
+		// or Executors.newScheduledThreadPool(2); if you have multiple tasks
+		LocalDateTime todayAt1Am = LocalDate.now().atTime(0, 17);
+		exe.schedule(() -> System.out.println("Executed at:" + (new Date())),
+				LocalDateTime.now().until(todayAt1Am, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
+
 		log.info("Fin parseo news");
 
-		return "Parseo Rosters OK";
+		return "Parseo news OK";
 	}
 }

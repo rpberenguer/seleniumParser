@@ -86,7 +86,12 @@
 			<artifactId>telegrambots</artifactId>
 			<version>4.1</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.github.pengrad</groupId>
+			<artifactId>java-telegram-bot-api</artifactId>
+			<version>4.1.1</version>
+		</dependency>
+
 		<!-- ActiveMQ -->
 		<dependency>
 			<groupId>org.apache.activemq</groupId>

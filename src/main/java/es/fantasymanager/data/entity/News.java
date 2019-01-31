@@ -1,6 +1,6 @@
 package es.fantasymanager.data.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -36,13 +36,13 @@ public class News {
 	@JoinColumn(name = "PLAYER_ID")
 	private Player player;
 
-	@Column(name = "REPORT")
+	@Column(name = "REPORT", length = 500)
 	private String report;
 
-	@Column(name = "IMPACT")
+	@Column(name = "IMPACT", length = 1000)
 	private String impact;
 
-	@Column(name = "DATE")
-	private LocalDate date;
+	@Column(name = "DATE_TIME")
+	private LocalDateTime dateTime;
 
 }

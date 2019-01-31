@@ -5,14 +5,13 @@ import org.openqa.selenium.By;
 public interface Constants {
 
 	public static final String URL_ESPN = "http://www.espn.com";
-//	public static final String URL_ESPN_FANTASY = "http://fantasy.espn.com/basketball/league/settings?leagueId=511966";
 	public static final String URL_ROTOWORLD_NEWS = "http://www.rotoworld.com/playernews/nba/basketball-player-news";
 
 	/******************************
 	 *********** TRADE *************
 	 *******************************/
-	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
-//	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
+//	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
+	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
 	public static final String LOGIN_IFRAME = "disneyid-iframe";
 
 	public static final By BY_EMAIL_INPUT = By.xpath("//input[@type='email']");

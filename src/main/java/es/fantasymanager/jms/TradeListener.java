@@ -36,6 +36,7 @@ public class TradeListener implements Constants {
 //	@Autowired
 //	private SeleniumGridDockerHub hub;
 
+	@Deprecated
 	@JmsListener(destination = TRADE_QUEUE)
 	public void receiveMessage(@Payload TradeJmsMessageData tradeMessage, @Headers MessageHeaders headers,
 			Message message, Session session) throws JMSException, IOException {

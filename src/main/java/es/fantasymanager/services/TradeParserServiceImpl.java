@@ -76,12 +76,9 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 					i++;
 				}
 			}
-
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
 		} finally {
 			// Close
-			driver.close();
+			driver.quit();
 		}
 	}
 
