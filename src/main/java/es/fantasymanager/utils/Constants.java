@@ -10,8 +10,8 @@ public interface Constants {
 	/******************************
 	 *********** TRADE *************
 	 *******************************/
-//	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
-	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
+	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
+//	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
 	public static final String LOGIN_IFRAME = "disneyid-iframe";
 
 	public static final By BY_EMAIL_INPUT = By.xpath("//input[@type='email']");
@@ -31,6 +31,8 @@ public interface Constants {
 			.cssSelector("div.flex.mt7.pb7.justify-center.items-center a:nth-of-type(2)");
 	public static final By BY_SUBMIT_TRADE_BUTTON = By.cssSelector("input[name='btnSubmit'][value='Submit Roster'] ");
 	public static final By BY_CONFIRM_TRADE_BUTTON = By.cssSelector("a.btn.btn--custom.btn-confirm-action.mb3");
+
+	public static final String SEARCH_PLAYER_TEXT = "div.player--search--matches button[data-player-search-playerid='%s']";
 
 	/********************************
 	 *********** ROSTER *************

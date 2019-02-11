@@ -28,7 +28,7 @@ public class TradeParserController {
 			tradeMap.put(tradeData.getPlayerToAdd(), tradeData.getPlayerToRemove());
 		}
 
-		service.doTrade(tradeMap);
+		service.doTrade(tradeMap, tradeRequest.getTradeDate());
 
 		return "Parseo OK";
 	}

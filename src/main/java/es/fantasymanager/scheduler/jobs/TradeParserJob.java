@@ -4,6 +4,7 @@
 package es.fantasymanager.scheduler.jobs;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,9 @@ public class TradeParserJob extends AbstractCronJob implements Job {
 		try {
 			JobDataMap jobDataMap = jobExecutionContext.getMergedJobDataMap();
 			Map<String, String> tradeMap = (HashMap<String, String>) jobDataMap.get("tradeMap");
-			service.doTrade(tradeMap);
+			LocalDateTime tradeDate = (LocalDateTime) jobDataMap.get("tradeDate");
+
+			service.doTrade(tradeMap, tradeDate);
 
 		} catch (IOException e) {
 			throw new JobExecutionException(e);

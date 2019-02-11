@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewsParserServiceImpl implements NewsParserService, Constants {
 
-	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("MMM dd - h:mm a")
+	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("MMM d - h:mm a")
 			.parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue()).toFormatter(Locale.ENGLISH);
 
 	@Autowired

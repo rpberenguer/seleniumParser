@@ -35,6 +35,7 @@ public class TradeSchedulerController extends SchedulerController {
 		}
 
 		jobDataMap.put("tradeMap", tradeMap);
+		jobDataMap.put("tradeDate", tradeRequest.getTradeDate());
 
 		return jobDataMap;
 	}
