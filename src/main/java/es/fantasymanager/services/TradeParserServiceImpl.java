@@ -45,11 +45,9 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 //		hub.setupDriver("chrome");
 //		WebDriver driver = hub.getDriver();
 
-		// Driver
+		// driver + wait + jsExecutor
 		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
-		// Print the webdriver
-		log.info("Webdriver: " + driver.toString());
 		WebDriverWait wait = new WebDriverWait(driver, 90);
 		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
 
