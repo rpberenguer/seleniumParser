@@ -30,9 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TradeParserServiceImpl implements TradeParserService, Constants {
 
-//	@Autowired
-//	private JmsTemplate jmsTemplate;
-
 	@Autowired
 	private transient TelegramService telegramService;
 
@@ -41,15 +38,6 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 
 	@Override
 	public void doTrade(Map<String, String> tradeMap, LocalDateTime tradeDate) throws IOException {
-
-//		for (Entry<String, String> entry : tradeMap.entrySet()) {
-//			TradeJmsMessageData message = new TradeJmsMessageData();
-//			message.setPlayerToAdd(entry.getKey());
-//			message.setPlayerToRemove(entry.getValue());
-//
-//			log.info("sending with convertAndSend() to queue <" + message + ">");
-//			jmsTemplate.convertAndSend(TRADE_QUEUE, message);
-//		}
 
 		log.info("Trade Started! " + Thread.currentThread().getId());
 
@@ -66,9 +54,7 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
 
 		// Preparamos scheduledExecutor
-		ScheduledExecutorService exe = Executors.newSingleThreadScheduledExecutor();
-		// or Executors.newScheduledThreadPool(2); if you have multiple tasks
-//		LocalDateTime todayAt1Am = LocalDate.now().atTime(22, 59);
+		ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
 		// Login
 		login(driver, wait);
@@ -98,21 +84,25 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 			// Volvemos a la primera pestaña
 			driver.switchTo().window(firstTab);
 
-			exe.schedule(() -> {
-				// Commiteamos trades
+			// Programamos el comiteo de los trades
+			scheduledExecutor.schedule(() -> {
 				try {
 					commitTrade(wait, jsExecutor);
 
 					List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
 					for (int j = 1; j < tabs.size(); j++) {
+						// Switch de tab
 						driver.switchTo().window(tabs.get(j));
+						// Esperamos 1 seg
 						Thread.sleep(1000);
+
 //					driver.switchTo().defaultContent();
 						commitTrade(wait, jsExecutor);
-//					driver.close();
 					}
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					log.error("Error en Trade", e);
+				} catch (IOException e) {
+					log.error("Error enviando Telegram", e);
 				}
 			}, LocalDateTime.now().until(tradeDate, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
 
@@ -122,28 +112,27 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		}
 	}
 
-	private void commitTrade(WebDriverWait wait, JavascriptExecutor jsExecutor) {
+	private void commitTrade(WebDriverWait wait, JavascriptExecutor jsExecutor) throws IOException {
+		try {
+			// Find confirmButton
+			WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
+			log.info("Confirm button finded.");
+			jsExecutor.executeScript("arguments[0].click();", confirmButton);
+			
+		} catch (Exception e) {
 
-//		try {
-//			Thread.sleep(500);
+			String text = "Commit de Trade, ko.";
 
-		// Find confirmButton
-		WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
-		log.info("Confirm button finded.");
-		jsExecutor.executeScript("arguments[0].click();", confirmButton);
-
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+			// Logeamos + telegram
+			log.error(text, e);
+			telegramService.sendMessage(text);
+		}
 	}
 
 	private void prepareTrade(WebDriverWait wait, JavascriptExecutor jsExecutor, String playerToAdd,
 			String playerToRemove) throws IOException {
 
 		try {
-			// Timing
-//			long startTimeInSec = Instant.now().getEpochSecond();
-
 			// Buscamos player en bdd
 			Player player = playerRepository.findPlayerByNbaId(playerToAdd);
 
@@ -177,15 +166,6 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 			log.info("Continue button finded.");
 //			continueButton.click();
 			jsExecutor.executeScript("arguments[0].click();", continueButton);
-
-			// Find confirmButton
-//			WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
-//			log.info("Confirm button finded.");
-////			confirmButton.click();
-//			jsExecutor.executeScript("arguments[0].click();", confirmButton);
-
-			// Obtenemos tiempo
-//			Long endTimeInSec = Instant.now().getEpochSecond();
 
 //			String text = String.format("Trade de %s por %s, ok!", playerToAdd, playerToRemove);
 
