@@ -75,7 +75,7 @@ public interface Constants {
 	public static final By BY_ROTOWORLD_NEWS_ARTICLE_HEADER = By
 			.cssSelector("div.player-news-article__header a:nth-of-type(2)");
 	public static final By BY_ROTOWORLD_NEWS_ARTICLE_TITLE = By.cssSelector("div.player-news-article__title");
-	public static final By BY_ROTOWORLD_NEWS_ARTICLE_SUMMARY = By.cssSelector("player-news-article__summary");
+	public static final By BY_ROTOWORLD_NEWS_ARTICLE_SUMMARY = By.cssSelector("div.player-news-article__summary");
 
 	/********************************
 	 *********** SCHEDULER **********
