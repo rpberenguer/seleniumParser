@@ -36,11 +36,11 @@ public class News {
 	@JoinColumn(name = "PLAYER_ID")
 	private Player player;
 
-	@Column(name = "REPORT", length = 500)
-	private String report;
+	@Column(name = "TITLE", length = 500)
+	private String title;
 
-	@Column(name = "IMPACT", length = 1000)
-	private String impact;
+	@Column(name = "SUMMARY", length = 1000)
+	private String summary;
 
 	@Column(name = "DATE_TIME")
 	private LocalDateTime dateTime;

@@ -2,17 +2,14 @@ package es.fantasymanager.services;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Locale;
 
 import javax.transaction.Transactional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -33,8 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewsParserServiceImpl implements NewsParserService, Constants {
 
-	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("MMM d - h:mm a")
-			.parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue()).toFormatter(Locale.ENGLISH);
+	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
+			.appendPattern("dd MMM. yyyy HH:mm")
+//			.parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue())
+			.toFormatter(Locale.getDefault());
 
 	@Autowired
 	private transient NewsRepository newsRepository;
@@ -51,7 +50,7 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 
 		log.info("Parse News Started! " + Thread.currentThread().getId());
 
-		Locale.setDefault(Locale.ENGLISH);
+//		Locale.setDefault(Locale.ENGLISH);
 
 		// Driver
 		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
@@ -64,7 +63,7 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 //			telegramService.sendImageFromUrl();
 
 			final List<WebElement> tableNewsList = wait
-					.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_ROTOWORL_NEWS_DIV));
+					.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_ROTOWORLD_NEWS_LIST));
 
 			for (WebElement newsRow : tableNewsList) {
 				parserNewsInfo(newsRow);
@@ -82,7 +81,7 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 		News news = new News();
 
 		// Date
-		WebElement date = newsRow.findElement(By.cssSelector("div.info div.date"));
+		WebElement date = newsRow.findElement(BY_ROTOWORLD_NEWS_ARTICLE_DATE);
 		LocalDateTime dateTime = LocalDateTime.parse(date.getText(), formatter);
 		log.info("date {}, datTime {}", date.getText(), dateTime);
 
@@ -95,7 +94,7 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 		news.setDateTime(dateTime);
 
 		// Player info
-		WebElement playerInfo = newsRow.findElement(By.cssSelector("div.headline div.player a"));
+		WebElement playerInfo = newsRow.findElement(BY_ROTOWORLD_NEWS_ARTICLE_HEADER);
 
 		String href = playerInfo.getAttribute("href");
 		String playerName = StringUtils.substringAfterLast(href, "/");
@@ -118,18 +117,18 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 //		log.info("href {}, player {}", href, playerName);
 
 		// Report
-		WebElement report = newsRow.findElement(By.cssSelector("div.report p"));
-		log.info("report {}", report.getText());
-		news.setReport(report.getText());
+		WebElement title = newsRow.findElement(BY_ROTOWORLD_NEWS_ARTICLE_TITLE);
+		log.info("title {}", title.getText());
+		news.setTitle(title.getText());
 
 		// Impact
-		WebElement impact = newsRow.findElement(By.cssSelector("div.impact"));
-		log.info("impact {}", impact.getText());
-		news.setImpact(impact.getText());
+		WebElement summary = newsRow.findElement(BY_ROTOWORLD_NEWS_ARTICLE_SUMMARY);
+		log.info("summary {}", summary.getText());
+		news.setSummary(summary.getText());
 
 		newsRepository.save(news);
 
-		String text = "<b>" + player.getName() + "</b>\r\n" + news.getReport() + "\r\n";
+		String text = "<b>" + player.getName() + "</b>\r\n" + news.getTitle() + "\r\n";
 		telegramService.sendMessage(text);
 
 	}
