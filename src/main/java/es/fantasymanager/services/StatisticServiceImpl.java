@@ -26,9 +26,20 @@ public class StatisticServiceImpl implements StatisticService {
 	public List<StatisticAvgDto> getStatisticsAvg(LocalDate fromDate, final LocalDate toDate) {
 
 		log.info("Statistic Avg. " + Thread.currentThread().getId());
-		
-		return statisticRepository.findAvgAndSumStatisticsByPlayer(Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), 
+
+		return statisticRepository.findAvgAndSumStatisticsByDates(
+				Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
 				Date.from(toDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-		
+
+	}
+
+	@Override
+	public List<StatisticAvgDto> getStatisticsAvg(LocalDate fromDate, LocalDate toDate, String nbaId) {
+		log.info("Statistic Avg. " + Thread.currentThread().getId());
+
+		return statisticRepository.findAvgAndSumStatisticsByDatesAndPlayer(
+				Date.from(fromDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+				Date.from(toDate.atStartOfDay(ZoneId.systemDefault()).toInstant()), nbaId);
+
 	}
 }

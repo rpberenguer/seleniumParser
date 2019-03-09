@@ -70,7 +70,7 @@ public interface Constants {
 	 ************ NEWS **************
 	 *******************************/
 	public static final By BY_ROTOWORLD_NEWS_LIST = By
-			.cssSelector("ul.player-news__list.active.player-news__dynamic-list li");
+			.cssSelector("ul.player-news__list.active.player-news__dynamic-list li article.player-news-article");
 	public static final By BY_ROTOWORLD_NEWS_ARTICLE_DATE = By.cssSelector("div.player-news-article__timestamp");
 	public static final By BY_ROTOWORLD_NEWS_ARTICLE_HEADER = By
 			.cssSelector("div.player-news-article__header a:nth-of-type(2)");

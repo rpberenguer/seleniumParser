@@ -23,4 +23,6 @@ public class StatisticRequest extends BaseSheduledCronJobRequest implements Seri
 
 	@JsonDeserialize(using = LocalDateDeserializer.class)
 	private LocalDate endDate;
+
+	private String nbaId;
 }

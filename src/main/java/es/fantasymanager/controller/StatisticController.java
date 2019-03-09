@@ -24,7 +24,14 @@ public class StatisticController {
 	public List<StatisticAvgDto> getStatisticsAvg(@RequestBody StatisticRequest request) throws MalformedURLException {
 
 		log.info("Inicio get media estadisticas");
-		List<StatisticAvgDto> statisticsAvg = service.getStatisticsAvg(request.getStartDate(), request.getEndDate());
+
+		List<StatisticAvgDto> statisticsAvg = null;
+		if (request.getNbaId() == null) {
+			statisticsAvg = service.getStatisticsAvg(request.getStartDate(), request.getEndDate());
+		} else {
+			statisticsAvg = service.getStatisticsAvg(request.getStartDate(), request.getEndDate(), request.getNbaId());
+		}
+
 		log.info("Fin get media estadisticas");
 
 		return statisticsAvg;
