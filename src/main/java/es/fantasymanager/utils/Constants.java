@@ -89,4 +89,10 @@ public interface Constants {
 	public static final String STATISTIC_QUEUE = "statistic-queue";
 	public static final String TRADE_QUEUE = "trade-queue";
 
+	/********************************
+	 ************ EMOJIS ************
+	 ********************************/
+	public static final String EMOJI_WARNING = ":warning:";
+	public static final Double FANTASYPOINTS_TO_SEND_WARNING = Double.valueOf(15);
+
 }

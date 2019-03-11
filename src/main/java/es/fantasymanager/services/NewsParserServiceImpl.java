@@ -1,6 +1,6 @@
 package es.fantasymanager.services;
 
-import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -20,13 +20,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.vdurmont.emoji.EmojiParser;
-
+import es.fantasymanager.data.business.StatisticAvgDto;
 import es.fantasymanager.data.entity.News;
 import es.fantasymanager.data.entity.Player;
+import es.fantasymanager.data.entity.Season;
 import es.fantasymanager.data.repository.NewsRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
+import es.fantasymanager.data.repository.SeasonRepository;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.DateUtils;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -42,6 +44,9 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 
 	@Autowired
 	private transient PlayerRepository playerRepository;
+
+	@Autowired
+	private transient SeasonRepository seasonRepository;
 
 	@Autowired
 	private transient TelegramService telegramService;
@@ -81,15 +86,15 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 //			String textWithEmoji = EmojiParser.parseToUnicode("emoji: :smile:" + text);
 //			telegramService.sendMessage(textWithEmoji);
 
-		} catch (IOException e) {
-			log.error("Error enviando mensaje telegram.", e);
+		} catch (Exception e) {
+			log.error("Error tratando news.", e);
 		} finally {
 			driver.close();
 		}
 
 	}
 
-	private void parserNewsInfo(WebElement newsRow) throws IOException {
+	private void parserNewsInfo(WebElement newsRow) throws Exception {
 		News news = new News();
 
 		// Date
@@ -160,8 +165,21 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 		newsRepository.save(news);
 
 		String text = "<b>" + player.getName() + "</b>\r\n" + news.getTitle() + "\r\n";
-		String textWithEmoji = EmojiParser.parseToUnicode(":warning:" + text);
-		telegramService.sendMessage(textWithEmoji);
+
+		Season season = seasonRepository.findByIsCurrentSeason(true);
+
+		List<StatisticAvgDto> statistics = statisticService
+				.getStatisticsAvg(DateUtils.asLocalDate(season.getStartDate()), LocalDate.now(), player.getNbaId());
+
+		if (statistics.isEmpty()) {
+			throw new Exception("Estadisticas vacías para el jugador: " + player.getNbaId());
+		}
+
+		if (statistics.get(0).getFantasyPointsAvg() > FANTASYPOINTS_TO_SEND_WARNING) {
+			telegramService.sendMessage(text, EMOJI_WARNING);
+		} else {
+			telegramService.sendMessage(text);
+		}
 
 	}
 }

@@ -10,6 +10,7 @@ import com.pengrad.telegrambot.model.request.ParseMode;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
+import com.vdurmont.emoji.EmojiParser;
 
 @Service
 public class TelegramServiceImpl implements TelegramService {
@@ -21,6 +22,13 @@ public class TelegramServiceImpl implements TelegramService {
 	private String chatId;
 
 	@Override
+	public String sendMessage(String text, String emoji) throws IOException {
+
+		String textWithEmoji = EmojiParser.parseToUnicode(emoji + text);
+		return sendMessage(textWithEmoji);
+	}
+
+	@Override
 	public String sendMessage(String text) throws IOException {
 
 		TelegramBot bot = new TelegramBot(token);
@@ -28,24 +36,6 @@ public class TelegramServiceImpl implements TelegramService {
 		SendMessage request = new SendMessage(chatId, text).parseMode(ParseMode.HTML);
 		SendResponse response = bot.execute(request);
 		return response.description();
-
-//		String urlString = "https://api.telegram.org/bot" + token + "/sendMessage?chat_id=@" + chatId + "&text=%s";
-//
-//		urlString = String.format(urlString, text);
-//
-//		URL url = new URL(urlString);
-//		URLConnection conn = url.openConnection();
-//
-//		InputStream is = new BufferedInputStream(conn.getInputStream());
-//		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-//
-//		String inputLine = "";
-//		StringBuilder sb = new StringBuilder();
-//		while ((inputLine = br.readLine()) != null) {
-//			sb.append(inputLine);
-//		}
-//		String response = sb.toString();
-//		return response;
 	}
 
 	@Override
