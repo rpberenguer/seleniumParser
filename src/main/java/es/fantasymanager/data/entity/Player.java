@@ -20,20 +20,20 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name="PLAYER")
+@Table(name = "PLAYER")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
 @ToString(exclude = "statistics")
-public class Player  {
+public class Player {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "PLAYER_ID")
 	private Integer playerId;
 
-	@Column(name ="NAME", nullable = false, length = 100)
+	@Column(name = "NAME", nullable = false, length = 100)
 	private String name;
 
 	@Column(name = "NBA_ID")
@@ -42,6 +42,10 @@ public class Player  {
 	@ManyToOne(cascade = CascadeType.MERGE)
 	@JoinColumn(name = "TEAM_ID")
 	private Team team;
+
+	@ManyToOne(cascade = CascadeType.MERGE)
+	@JoinColumn(name = "FANTASY_TEAM_ID")
+	private FantasyTeam fantasyTeam;
 
 	@OneToMany(mappedBy = "player")
 	private List<Statistic> statistics;

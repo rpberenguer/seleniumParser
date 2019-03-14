@@ -7,13 +7,14 @@ public interface Constants {
 	public static final String URL_ESPN = "http://www.espn.com";
 	public static final String URL_ROTOWORLD_NEWS = "https://www.rotoworld.com/basketball/nba/player-news";
 
-	/******************************
-	 *********** TRADE *************
-	 *******************************/
 	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
 //	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
-	public static final String LOGIN_IFRAME = "disneyid-iframe";
+	public static final String URL_LEGAUE_ROSTERS = "http://fantasy.espn.com/basketball/league/rosters?leagueId=97189";
 
+	/********************************
+	 *********** LOGIN **************
+	 *******************************/
+	public static final String LOGIN_IFRAME = "disneyid-iframe";
 	public static final By BY_EMAIL_INPUT = By.xpath("//input[@type='email']");
 	public static final By BY_PASSWORD_INPUT = By.xpath("//input[@type='password']");
 	public static final By BY_SUBMIT_LOGIN_BUTTON = By
@@ -95,4 +96,11 @@ public interface Constants {
 	public static final String EMOJI_WARNING = ":warning:";
 	public static final Double FANTASYPOINTS_TO_SEND_WARNING = Double.valueOf(15);
 
+	/***************************************
+	 ************ FANTASY TEAMS ************
+	 ***************************************/
+	public static final By BY_FANTASY_TEAM_DIV = By.cssSelector("div[class='pa1 bg-clr-white br-5 roster-container']");
+	public static final String PLAYER_IMG_PREFIX = "http://a.espncdn.com/combiner/i?img=/i/headshots/NBA/players/full/";
+	public static final By BY_FANTASY_TEAM_PLAYER_IMG = By.cssSelector("img[src^='" + PLAYER_IMG_PREFIX + "']");
+	public static final By BY_FANTASY_TEAM_TITLE = By.cssSelector("span.teamName.truncate");
 }
