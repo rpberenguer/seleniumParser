@@ -55,7 +55,7 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 
 				// Buscamos titulo del equipo fantasy
 				WebElement fantasyTeamSpan = fantasyTeamElement.findElement(BY_FANTASY_TEAM_TITLE);
-				FantasyTeam fantasyTeam = fantasyTeamRespository.findByTameName(fantasyTeamSpan.getText());
+				FantasyTeam fantasyTeam = fantasyTeamRespository.findByTeamName(fantasyTeamSpan.getText());
 				if (fantasyTeam == null) {
 					log.error("Fantasy Team no encontrado {}", fantasyTeamSpan.getText());
 					continue;

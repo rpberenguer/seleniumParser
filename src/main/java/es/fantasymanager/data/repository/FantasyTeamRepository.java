@@ -6,5 +6,5 @@ import es.fantasymanager.data.entity.FantasyTeam;
 
 public interface FantasyTeamRepository extends CrudRepository<FantasyTeam, Integer> {
 
-	FantasyTeam findByTameName(String tameName);
+	FantasyTeam findByTeamName(String tameName);
 }

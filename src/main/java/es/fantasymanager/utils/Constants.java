@@ -1,5 +1,11 @@
 package es.fantasymanager.utils;
 
+import java.time.Year;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
+import java.util.Locale;
+
 import org.openqa.selenium.By;
 
 public interface Constants {
@@ -10,6 +16,7 @@ public interface Constants {
 	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
 //	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
 	public static final String URL_LEGAUE_ROSTERS = "http://fantasy.espn.com/basketball/league/rosters?leagueId=97189";
+	public static final String URL_RECENT_ACTIVITY = "http://fantasy.espn.com/basketball/recentactivity?leagueId=97189";
 
 	/********************************
 	 *********** LOGIN **************
@@ -103,4 +110,12 @@ public interface Constants {
 	public static final String PLAYER_IMG_PREFIX = "http://a.espncdn.com/combiner/i?img=/i/headshots/NBA/players/full/";
 	public static final By BY_FANTASY_TEAM_PLAYER_IMG = By.cssSelector("img[src^='" + PLAYER_IMG_PREFIX + "']");
 	public static final By BY_FANTASY_TEAM_TITLE = By.cssSelector("span.teamName.truncate");
+
+	/***************************************
+	 ************ TRANSACTIONS *************
+	 ***************************************/
+	public static final String LAST_TRANSACTION_DATE = "lastTransaction";
+	public static final DateTimeFormatter formatterTransaction = new DateTimeFormatterBuilder().parseCaseInsensitive()
+			.appendPattern("E MMM d h:mm a").parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue())
+			.toFormatter(Locale.ENGLISH);
 }

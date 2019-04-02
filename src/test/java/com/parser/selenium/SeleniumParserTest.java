@@ -3,8 +3,10 @@ package com.parser.selenium;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Locale;
 
 import org.junit.Test;
@@ -30,6 +32,9 @@ public class SeleniumParserTest implements Constants {
 
 	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().appendPattern("d MMM. yyyy HH:mm")
 			.toFormatter(Locale.getDefault());
+	private static final DateTimeFormatter formatter2 = new DateTimeFormatterBuilder().parseCaseInsensitive()
+			.appendPattern("E MMM d h:mm a").parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue())
+			.toFormatter(Locale.ENGLISH);
 
 	@Test
 	public void doTrade() throws IOException {
@@ -59,5 +64,13 @@ public class SeleniumParserTest implements Constants {
 		String strDate = "15 mar. 2019 22:59";
 		LocalDateTime dateTime = LocalDateTime.parse(strDate, formatter);
 		log.info("date {}, datTime {}", strDate, dateTime);
+	}
+
+	@Test
+	public void parseTransactions() throws MalformedURLException {
+
+		String date = "Thu Mar 14 12:00 am";
+		LocalDateTime dateTime = LocalDateTime.parse(date, formatter2);
+		log.info("date {}, datTime {}", date, dateTime);
 	}
 }
