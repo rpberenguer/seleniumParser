@@ -31,7 +31,7 @@ public class FantasyTeam {
 	private Integer fantasyTeamId;
 
 	@Column(name = "TEAM_NAME", length = 500)
-	private String tameName;
+	private String teamName;
 
 	@Column(name = "ABBREV", length = 5)
 	private String abbrev;
