@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import es.fantasymanager.data.business.SchedulerTaskData;
 import es.fantasymanager.data.enums.JobsEnum;
 import es.fantasymanager.data.rest.request.BaseSheduledCronJobRequest;
-import es.fantasymanager.services.SchedulerService;
+import es.fantasymanager.services.interfaces.SchedulerService;
 
 @RestController
 @RequestMapping(path = "/schedule")

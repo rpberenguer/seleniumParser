@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.fantasymanager.data.business.StatisticAvgDto;
 import es.fantasymanager.data.rest.request.StatisticRequest;
-import es.fantasymanager.services.StatisticService;
+import es.fantasymanager.services.interfaces.StatisticService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import es.fantasymanager.configuration.quartz.QuartzConfiguration;
 import es.fantasymanager.data.enums.JobsEnum;
-import es.fantasymanager.services.NewsParserService;
+import es.fantasymanager.services.interfaces.NewsParserService;
 import lombok.extern.slf4j.Slf4j;
 
 /**

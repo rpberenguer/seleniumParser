@@ -18,6 +18,7 @@ import es.fantasymanager.data.entity.FantasyTeam;
 import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.repository.FantasyTeamRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
+import es.fantasymanager.services.interfaces.FantasyTeamParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.FantasyManagerHelper;
 import lombok.extern.slf4j.Slf4j;

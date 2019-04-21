@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.fantasymanager.data.rest.request.StatisticRequest;
-import es.fantasymanager.services.StatisticParserService;
+import es.fantasymanager.services.interfaces.StatisticParserService;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController

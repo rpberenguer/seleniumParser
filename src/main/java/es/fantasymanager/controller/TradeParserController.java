@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import es.fantasymanager.data.business.TradeData;
 import es.fantasymanager.data.rest.request.TradeRequest;
-import es.fantasymanager.services.TradeParserService;
+import es.fantasymanager.services.interfaces.TradeParserService;
 
 @RestController
 public class TradeParserController {

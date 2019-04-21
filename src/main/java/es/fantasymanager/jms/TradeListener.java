@@ -22,7 +22,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import es.fantasymanager.data.jms.TradeJmsMessageData;
-import es.fantasymanager.services.TelegramService;
+import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 

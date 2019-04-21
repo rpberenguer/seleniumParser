@@ -1,4 +1,4 @@
-package es.fantasymanager.services;
+package es.fantasymanager.services.interfaces;
 
 public interface NewsParserService {
 

@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import es.fantasymanager.data.enums.JobsEnum;
-import es.fantasymanager.services.TradeParserService;
+import es.fantasymanager.services.interfaces.TradeParserService;
 import lombok.extern.slf4j.Slf4j;
 
 /**

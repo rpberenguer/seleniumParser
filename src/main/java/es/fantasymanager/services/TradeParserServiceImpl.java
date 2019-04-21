@@ -23,6 +23,8 @@ import org.springframework.stereotype.Service;
 
 import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.repository.PlayerRepository;
+import es.fantasymanager.services.interfaces.TelegramService;
+import es.fantasymanager.services.interfaces.TradeParserService;
 import es.fantasymanager.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 

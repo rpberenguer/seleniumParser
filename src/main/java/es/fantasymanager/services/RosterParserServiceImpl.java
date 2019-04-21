@@ -18,6 +18,7 @@ import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.entity.Team;
 import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.data.repository.TeamRepository;
+import es.fantasymanager.services.interfaces.RosterParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;

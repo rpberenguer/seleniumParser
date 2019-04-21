@@ -11,6 +11,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import es.fantasymanager.data.jms.GameJmsMessageData;
+import es.fantasymanager.services.interfaces.StatisticParserService;
 import es.fantasymanager.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 

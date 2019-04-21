@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import es.fantasymanager.data.business.StatisticAvgDto;
 import es.fantasymanager.data.repository.StatisticRepository;
+import es.fantasymanager.services.interfaces.StatisticService;
 import lombok.extern.slf4j.Slf4j;
 
 @Service

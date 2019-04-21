@@ -12,6 +12,8 @@ import com.pengrad.telegrambot.request.SendPhoto;
 import com.pengrad.telegrambot.response.SendResponse;
 import com.vdurmont.emoji.EmojiParser;
 
+import es.fantasymanager.services.interfaces.TelegramService;
+
 @Service
 public class TelegramServiceImpl implements TelegramService {
 

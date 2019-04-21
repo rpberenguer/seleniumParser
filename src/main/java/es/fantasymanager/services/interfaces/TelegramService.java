@@ -1,4 +1,4 @@
-package es.fantasymanager.services;
+package es.fantasymanager.services.interfaces;
 
 import java.io.IOException;
 

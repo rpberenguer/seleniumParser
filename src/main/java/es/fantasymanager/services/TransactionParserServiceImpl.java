@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import es.fantasymanager.data.repository.ParameterRepository;
+import es.fantasymanager.services.interfaces.TransactionParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.FantasyManagerHelper;
 import lombok.extern.slf4j.Slf4j;
@@ -71,6 +72,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 					final WebElement paginationNavElement = wait.until(ExpectedConditions
 							.elementToBeClickable(By.cssSelector(String.format(BY_PAGINATION_NAV_LIST_ELEMENT, i))));
 					log.debug("pagination list: " + paginationNavElement);
+//					paginationNavElement.click();
 					jsExecutor.executeScript("arguments[0].click();", paginationNavElement);
 
 					getTransactionsByPage(wait2);
@@ -89,5 +91,10 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 	private void getTransactionsByPage(WebDriverWait wait2) {
 		log.debug("getTransactionsByPage");
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 }

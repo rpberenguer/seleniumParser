@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.fantasymanager.services.TelegramService;
+import es.fantasymanager.services.interfaces.TelegramService;
 
 @RestController
 public class TelegramController {

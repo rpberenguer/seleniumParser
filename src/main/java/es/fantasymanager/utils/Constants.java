@@ -122,5 +122,5 @@ public interface Constants {
 	public static final String TRANSACTIONS_START_DATE_OPTIONS = "div.filterDropdowns div.Dropdown__Wrapper.di.nowrap:nth-of-type(2) select option[value='%s']";
 
 	public static final By BY_PAGINATION_NAV_LIST = By.cssSelector("div.PaginationNav__wrap.overflow-x-auto ul li");
-	public static final String BY_PAGINATION_NAV_LIST_ELEMENT = "div.PaginationNav__wrap.overflow-x-auto ul li:nth-of-type(%s)";
+	public static final String BY_PAGINATION_NAV_LIST_ELEMENT = "div.PaginationNav__wrap.overflow-x-auto ul li:nth-of-type(%s) a";
 }

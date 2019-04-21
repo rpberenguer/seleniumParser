@@ -17,6 +17,7 @@ import es.fantasymanager.data.enums.JobsEnum;
 import es.fantasymanager.data.repository.QuartzRepository;
 import es.fantasymanager.data.repository.ScheduledTasksRepository;
 import es.fantasymanager.scheduler.jobs.ScheduleJobBuilder;
+import es.fantasymanager.services.interfaces.SchedulerService;
 
 @Service
 public class SchedulerServiceImpl implements SchedulerService {

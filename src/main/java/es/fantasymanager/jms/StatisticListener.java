@@ -32,7 +32,7 @@ import es.fantasymanager.data.repository.GameRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.data.repository.StatisticRepository;
 import es.fantasymanager.data.repository.TeamRepository;
-import es.fantasymanager.services.TelegramService;
+import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 
