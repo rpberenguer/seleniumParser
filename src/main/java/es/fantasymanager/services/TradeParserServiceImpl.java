@@ -44,17 +44,17 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		log.info("Trade Started! " + Thread.currentThread().getId());
 
 		// Get driver
-//		hub.setupDriver("chrome");
-//		WebDriver driver = hub.getDriver();
+		//		hub.setupDriver("chrome");
+		//		WebDriver driver = hub.getDriver();
 
 		// driver + wait + jsExecutor
-		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
-		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
+		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		final WebDriver driver = new ChromeDriver();
+		final WebDriverWait wait = new WebDriverWait(driver, 90);
+		final JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
 		// Preparamos scheduledExecutor
-		ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
+		final ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
 
 		// Login
 		login(driver, wait);
@@ -62,18 +62,18 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		try {
 
 			// Store the current window handle
-			String firstTab = driver.getWindowHandle();
+			final String firstTab = driver.getWindowHandle();
 
 			// Preparamos los trades con las ventanas de confirmacion
 			int i = 1;
-			for (Entry<String, String> entry : tradeMap.entrySet()) {
+			for (final Entry<String, String> entry : tradeMap.entrySet()) {
 
 				// logica de fichaje
 				prepareTrade(wait, jsExecutor, entry.getKey(), entry.getValue());
 
 				if (i < tradeMap.entrySet().size()) {
 					jsExecutor.executeScript("window.open()");
-					List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+					final List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
 					driver.switchTo().window(tabs.get(i));
 					driver.get(URL_ADD_PLAYERS);
 
@@ -89,39 +89,39 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 				try {
 					commitTrade(wait, jsExecutor);
 
-					List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
+					final List<String> tabs = new ArrayList<String>(driver.getWindowHandles());
 					for (int j = 1; j < tabs.size(); j++) {
 						// Switch de tab
 						driver.switchTo().window(tabs.get(j));
 						// Esperamos 1 seg
 						Thread.sleep(1000);
 
-//					driver.switchTo().defaultContent();
+						//					driver.switchTo().defaultContent();
 						commitTrade(wait, jsExecutor);
 					}
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					log.error("Error en Trade", e);
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					log.error("Error enviando Telegram", e);
 				}
 			}, LocalDateTime.now().until(tradeDate, ChronoUnit.MILLIS), TimeUnit.MILLISECONDS);
 
 		} finally {
 			// Close
-//			driver.quit();
+			//			driver.quit();
 		}
 	}
 
 	private void commitTrade(WebDriverWait wait, JavascriptExecutor jsExecutor) throws IOException {
 		try {
 			// Find confirmButton
-			WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
+			final WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
 			log.info("Confirm button finded.");
 			jsExecutor.executeScript("arguments[0].click();", confirmButton);
-			
-		} catch (Exception e) {
 
-			String text = "Commit de Trade, ko.";
+		} catch (final Exception e) {
+
+			final String text = "Commit de Trade, ko.";
 
 			// Logeamos + telegram
 			log.error(text, e);
@@ -134,27 +134,27 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 
 		try {
 			// Buscamos player en bdd
-			Player player = playerRepository.findPlayerByNbaId(playerToAdd);
+			final Player player = playerRepository.findPlayerByNbaId(playerToAdd);
 
 			// Hacemos busqueda en el input text
-			WebElement inputSearch = wait
+			final WebElement inputSearch = wait
 					.until(ExpectedConditions.elementToBeClickable(By.cssSelector("input[placeholder='Player Name']")));
 			inputSearch.sendKeys(player.getName());
 
-			String strPlayerSearchId = String.format(SEARCH_PLAYER_TEXT, playerToAdd);
-			WebElement playerSearchMatches = wait
+			final String strPlayerSearchId = String.format(SEARCH_PLAYER_TEXT, playerToAdd);
+			final WebElement playerSearchMatches = wait
 					.until(ExpectedConditions.elementToBeClickable(By.cssSelector(strPlayerSearchId)));
 			playerSearchMatches.click();
 
 			// Find (+) Add Player Linkg & click()
-			WebElement addPlayerLink = wait.until(
+			final WebElement addPlayerLink = wait.until(
 					ExpectedConditions.elementToBeClickable(By.xpath(String.format(ADD_PLAYER_LINK, playerToAdd))));
 
 			log.info("Player to add finded.");
 			addPlayerLink.click();
 
 			// Find checkBox to Remove Player
-			WebElement removePlayerLink = wait.until(ExpectedConditions
+			final WebElement removePlayerLink = wait.until(ExpectedConditions
 					.elementToBeClickable(By.xpath(String.format(REMOVE_PLAYER_LINK, playerToRemove))));
 
 			log.info("Player to remove finded.");
@@ -162,19 +162,19 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 			jsExecutor.executeScript("arguments[0].click();", removePlayerLink);
 
 			// Find continueButton
-			WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
+			final WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
 			log.info("Continue button finded.");
-//			continueButton.click();
+			//			continueButton.click();
 			jsExecutor.executeScript("arguments[0].click();", continueButton);
 
-//			String text = String.format("Trade de %s por %s, ok!", playerToAdd, playerToRemove);
+			//			String text = String.format("Trade de %s por %s, ok!", playerToAdd, playerToRemove);
 
 			// Logeamos + telegram
-//			log.info(text);
-//			telegramService.sendMessage(text);
-		} catch (Exception e) {
+			//			log.info(text);
+			//			telegramService.sendMessage(text);
+		} catch (final Exception e) {
 
-			String text = String.format("Trade de %s por %s, ko.", playerToAdd, playerToRemove);
+			final String text = String.format("Trade de %s por %s, ko.", playerToAdd, playerToRemove);
 
 			// Logeamos + telegram
 			log.error(text, e);
@@ -205,7 +205,7 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		password.sendKeys("ilovethisgame&&&");
 
 		final WebElement signupButton = wait.until(ExpectedConditions.elementToBeClickable(BY_SUBMIT_LOGIN_BUTTON));
-//				signupButton.click();
+		//				signupButton.click();
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", signupButton);
 
 		log.info("Login ok!");

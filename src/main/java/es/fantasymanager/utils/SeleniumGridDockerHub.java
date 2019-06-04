@@ -16,14 +16,14 @@ public class SeleniumGridDockerHub {
 
 	public void setupDriver(String browser) throws MalformedURLException {
 		// Set DesiredCapabilities
-		DesiredCapabilities capabilities = new DesiredCapabilities();
+		final DesiredCapabilities capabilities = new DesiredCapabilities();
 
 		// Set BrowserName
 		capabilities.setCapability("browserName", browser);
 
 		// Set Browser to ThreadLocalMap
-		driver.set(new RemoteWebDriver(new URL("http://192.168.99.100:31983/wd/hub"), capabilities));
-//		driver.set(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities));
+		//		driver.set(new RemoteWebDriver(new URL("http://192.168.99.100:31983/wd/hub"), capabilities));
+		driver.set(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capabilities));
 	}
 
 	public void quitDriver() throws Exception {

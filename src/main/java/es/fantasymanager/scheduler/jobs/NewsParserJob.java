@@ -3,6 +3,8 @@
  */
 package es.fantasymanager.scheduler.jobs;
 
+import java.net.MalformedURLException;
+
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -35,7 +37,14 @@ public class NewsParserJob extends AbstractCronJob implements Job {
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		log.info("Executing Job {}", this.getClass().getName());
-		service.parseNews();
+
+
+		try {
+			service.parseNews();
+		} catch (final MalformedURLException e) {
+			log.error(e.getMessage(), e);
+			throw new JobExecutionException(e.getMessage());
+		}
 	}
 
 	@Override

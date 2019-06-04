@@ -14,7 +14,11 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @SpringBootApplication
 @EnableJpaRepositories
 public class FantasyManagerRootConfig  {
-	
+
+	static {
+		System.setProperty("webdriver.chrome.driver", "D:\\webdrivers\\chromedriver.exe");
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(FantasyManagerRootConfig.class, args);
 	}

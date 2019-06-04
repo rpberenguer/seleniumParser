@@ -52,34 +52,34 @@ public class GameListener implements Constants {
 		log.info("Received <---" + gameMessage + "--->");
 
 		// Driver
-		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
+		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		final WebDriver driver = new ChromeDriver();
+		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Fechas a parsear
 		LocalDate startDate = gameMessage.getStartDate();
-		LocalDate endDate = gameMessage.getEndDate();
+		final LocalDate endDate = gameMessage.getEndDate();
 
 		// Lista donde guardar los gameIds
-		List<String> gameIds = new ArrayList<>();
-		
+		final List<String> gameIds = new ArrayList<>();
+
 		// Timing
-		long startTimeInSec = Instant.now().getEpochSecond();
+		final long startTimeInSec = Instant.now().getEpochSecond();
 
 		try {
 			driver.get(URL_SCHEDULE + startDate.format(formatter));
 
 			final List<WebElement> tableDayList = wait
 					.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_SCHEDULE_TABLE_DAY));
-			for (WebElement tableDay : tableDayList) {
+			for (final WebElement tableDay : tableDayList) {
 
-				List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
-				for (WebElement gameLink : gameByDays) {
-					String href = gameLink.getAttribute("href");
+				final List<WebElement> gameByDays = tableDay.findElements(BY_GAME_LINK);
+				for (final WebElement gameLink : gameByDays) {
+					final String href = gameLink.getAttribute("href");
 					log.info("Game link {}", href);
 
 					final String nbaId = StringUtils.substringAfter(href, GAME_LINK);
-					
+
 					Game game = gameRepository.findByNbaId(nbaId);
 					if(game != null) {
 						log.info("Partido ya insertado en BDD: {}", nbaId);
@@ -111,12 +111,12 @@ public class GameListener implements Constants {
 			// Cerramos driver
 			driver.close();
 		}
-		
-		Long endTimeInSec = Instant.now().getEpochSecond();
+
+		final Long endTimeInSec = Instant.now().getEpochSecond();
 		log.info("Partidos obtenidos entre las fechas {} y {}. Tiempo {}", gameMessage.getStartDate(), gameMessage.getEndDate(), endTimeInSec - startTimeInSec);
 
 		// Enviamos mensaje cola de estadisticas
-		StatisticJmsMessageData statisticMessage = new StatisticJmsMessageData();
+		final StatisticJmsMessageData statisticMessage = new StatisticJmsMessageData();
 		statisticMessage.setGameIds(gameIds);
 
 		log.info("sending with convertAndSend() to queue <" + statisticMessage + ">");

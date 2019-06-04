@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,11 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 		log.info("Roster Parser Started! " + Thread.currentThread().getId());
 
 		// Get driver
-		//		WebDriver driver = new ChromeDriver();
 
-		hub.setupDriver("chrome");
-		WebDriver driver = hub.getDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
+		//		hub.setupDriver("chrome");
+		//		WebDriver driver = hub.getDriver();
+		final WebDriver driver = new ChromeDriver();
+		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {
 			driver.get(URL_TEAMS);
@@ -59,24 +60,24 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			final List<WebElement> teamLinks = wait.until(
 					ExpectedConditions.presenceOfAllElementsLocatedBy(BY_ROSTER_LINK));
 
-			for (WebElement teamLink : teamLinks) {
+			for (final WebElement teamLink : teamLinks) {
 
-				String hrefTeam = teamLink.getAttribute("href");
+				final String hrefTeam = teamLink.getAttribute("href");
 				log.debug("Team link {}", hrefTeam);
 
-				String[] codes = StringUtils.substringAfter(hrefTeam, ROSTER_LINK).split("/");
-				Team team = new Team();
+				final String[] codes = StringUtils.substringAfter(hrefTeam, ROSTER_LINK).split("/");
+				final Team team = new Team();
 				team.setShortCode(codes[0]);
 				team.setLongCode(codes[1]);
-				String name = teamLink.findElement(By.xpath("./../../../a/h2")).getText();
+				final String name = teamLink.findElement(By.xpath("./../../../a/h2")).getText();
 				team.setName(name);
 
 				teamRespository.save(team);
 			}
 
-			List<Team> teams = (List<Team>) teamRespository.findAll();
+			final List<Team> teams = (List<Team>) teamRespository.findAll();
 			//			WebDriverWait wait = new WebDriverWait(driver, 90);
-			for (Team team : teams) {
+			for (final Team team : teams) {
 				// Get Roster URL
 				driver.get(URL_ESPN + ROSTER_LINK + team.getShortCode() + "/" + team.getLongCode());
 
@@ -84,11 +85,11 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 				final List<WebElement> playerLinks = wait.until(
 						ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PLAYER_LINK));
 
-				for (WebElement playerLink : playerLinks) {
-					String hrefPlayer = playerLink.getAttribute("href");
-					String nbaId = StringUtils.substringAfter(hrefPlayer, PLAYER_LINK);
+				for (final WebElement playerLink : playerLinks) {
+					final String hrefPlayer = playerLink.getAttribute("href");
+					final String nbaId = StringUtils.substringAfter(hrefPlayer, PLAYER_LINK);
 
-					Player player = new Player();
+					final Player player = new Player();
 					player.setName(playerLink.getText());
 					player.setNbaId(nbaId);
 					player.setTeam(team);

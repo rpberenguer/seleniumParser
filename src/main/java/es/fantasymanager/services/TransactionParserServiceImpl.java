@@ -37,18 +37,18 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 		log.info("Transaction Parser Started! " + Thread.currentThread().getId());
 
-		String strLastTransaction = parameterRepository.findByCode(LAST_TRANSACTION_DATE).getValue();
-		LocalDateTime lastTransactionDate = LocalDateTime.parse(strLastTransaction, formatterTransaction);
+		final String strLastTransaction = parameterRepository.findByCode(LAST_TRANSACTION_DATE).getValue();
+		final LocalDateTime lastTransactionDate = LocalDateTime.parse(strLastTransaction, formatterTransaction);
 
-		String formatDateTime = lastTransactionDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+		final String formatDateTime = lastTransactionDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		log.debug("Formatted Time: " + formatDateTime);
 
 		// Driver
-		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
-		WebDriverWait wait2 = new WebDriverWait(driver, 5);
-		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
+		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		final WebDriver driver = new ChromeDriver();
+		final WebDriverWait wait = new WebDriverWait(driver, 90);
+		final WebDriverWait wait2 = new WebDriverWait(driver, 5);
+		final JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
 
 		// Login
 		FantasyManagerHelper.login(driver, wait, URL_RECENT_ACTIVITY);
@@ -72,18 +72,18 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 					final WebElement paginationNavElement = wait.until(ExpectedConditions
 							.elementToBeClickable(By.cssSelector(String.format(BY_PAGINATION_NAV_LIST_ELEMENT, i))));
 					log.debug("pagination list: " + paginationNavElement);
-//					paginationNavElement.click();
+					//					paginationNavElement.click();
 					jsExecutor.executeScript("arguments[0].click();", paginationNavElement);
 
 					getTransactionsByPage(wait2);
 				}
 			}
 
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			log.error("Error tratando transactions.", e);
 		} finally {
 			// Quit driver
-//			driver.quit();
+			//			driver.quit();
 		}
 
 		log.info("Transaction Parser Ended! " + Thread.currentThread().getId());
@@ -93,7 +93,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		log.debug("getTransactionsByPage");
 		try {
 			Thread.sleep(1000);
-		} catch (InterruptedException e) {
+		} catch (final InterruptedException e) {
 			e.printStackTrace();
 		}
 	}
