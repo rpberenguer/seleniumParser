@@ -40,9 +40,9 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 		log.info("Fantasy Team Parser Started! " + Thread.currentThread().getId());
 
 		// Driver
-		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
+		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		final WebDriver driver = new ChromeDriver();
+		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Login
 		FantasyManagerHelper.login(driver, wait, URL_LEGAUE_ROSTERS);
@@ -52,11 +52,11 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 			final List<WebElement> fantasyTeamList = wait
 					.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_FANTASY_TEAM_DIV));
 
-			for (WebElement fantasyTeamElement : fantasyTeamList) {
+			for (final WebElement fantasyTeamElement : fantasyTeamList) {
 
 				// Buscamos titulo del equipo fantasy
-				WebElement fantasyTeamSpan = fantasyTeamElement.findElement(BY_FANTASY_TEAM_TITLE);
-				FantasyTeam fantasyTeam = fantasyTeamRespository.findByTeamName(fantasyTeamSpan.getText());
+				final WebElement fantasyTeamSpan = fantasyTeamElement.findElement(BY_FANTASY_TEAM_TITLE);
+				final FantasyTeam fantasyTeam = fantasyTeamRespository.findByTeamName(fantasyTeamSpan.getText());
 				if (fantasyTeam == null) {
 					log.error("Fantasy Team no encontrado {}", fantasyTeamSpan.getText());
 					continue;
@@ -65,16 +65,16 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 				log.debug("Fantasy Team {}", fantasyTeam.toString());
 
 				// Buscamos jugadores del equipo fantasy
-				List<WebElement> playerList = fantasyTeamElement.findElements(BY_FANTASY_TEAM_PLAYER_IMG);
+				final List<WebElement> playerList = fantasyTeamElement.findElements(BY_FANTASY_TEAM_PLAYER_IMG);
 
-				for (WebElement playerElement : playerList) {
+				for (final WebElement playerElement : playerList) {
 
-					String src = playerElement.getAttribute("src");
-					String nbaId = StringUtils.substringBetween(src, PLAYER_IMG_PREFIX, ".png");
+					final String src = playerElement.getAttribute("src");
+					final String nbaId = StringUtils.substringBetween(src, PLAYER_IMG_PREFIX, ".png");
 					log.debug("Player nbaId {}", nbaId);
 
 					// Buscamos jugador y lo asociamos al equipo fantasy
-					Player player = playerRespository.findPlayerByNbaId(nbaId);
+					final Player player = playerRespository.findPlayerByNbaId(nbaId);
 
 					if (player == null) {
 						log.error("Player no encontrado {}", nbaId);

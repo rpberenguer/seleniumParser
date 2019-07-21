@@ -62,43 +62,43 @@ public class StatisticListener implements Constants {
 		log.info("Received <---" + statisticMessage + "--->");
 
 		// Driver
-		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
-		WebDriver driver = new ChromeDriver();
-		WebDriverWait wait = new WebDriverWait(driver, 90);
+		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		final WebDriver driver = new ChromeDriver();
+		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Timing
-		long startTimeInSec = Instant.now().getEpochSecond();
+		final long startTimeInSec = Instant.now().getEpochSecond();
 
 		try {
-			for (String gameId : statisticMessage.getGameIds()) {
+			for (final String gameId : statisticMessage.getGameIds()) {
 				log.info("GameId {}", gameId);
 
 				driver.get(URL_ESPN + BOXSCORE_LINK + gameId);
 
-//			// Team Home
-//		WebElement teamHomeDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV), "Team Home not found correctly");
-//		WebElement teamHomeDiv = driver.findElement(BY_TEAM_HOME_DIV);
-				WebElement teamHomeDiv = wait.until(ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV));
-				WebElement scoreHomeDiv = teamHomeDiv.findElement(BY_SCORE_HOME_DIV);
-				WebElement teamHomeLink = teamHomeDiv.findElement(BY_TEAM_LINK);
-				String teamHomeShortCode = StringUtils.substringBetween(teamHomeLink.getAttribute("href"), TEAM_LINK,
+				//			// Team Home
+				//		WebElement teamHomeDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV), "Team Home not found correctly");
+				//		WebElement teamHomeDiv = driver.findElement(BY_TEAM_HOME_DIV);
+				final WebElement teamHomeDiv = wait.until(ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV));
+				final WebElement scoreHomeDiv = teamHomeDiv.findElement(BY_SCORE_HOME_DIV);
+				final WebElement teamHomeLink = teamHomeDiv.findElement(BY_TEAM_LINK);
+				final String teamHomeShortCode = StringUtils.substringBetween(teamHomeLink.getAttribute("href"), TEAM_LINK,
 						"/");
 
-				Team teamHome = teamRepository.findByShortCode(teamHomeShortCode);
+				final Team teamHome = teamRepository.findByShortCode(teamHomeShortCode);
 				log.info("Team Home {}", teamHome);
 
 				// Team Away
-//	WebElement teamAwayDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV), "Team Away not found correctly");
-				WebElement teamAwayDiv = driver.findElement(BY_TEAM_AWAY_DIV);
-				WebElement scoreAwayDiv = teamAwayDiv.findElement(BY_SCORE_AWAY_DIV);
-				WebElement teamAwayLink = teamAwayDiv.findElement(BY_TEAM_LINK);
-				String teamAwayShortCode = StringUtils.substringBetween(teamAwayLink.getAttribute("href"), TEAM_LINK,
+				//	WebElement teamAwayDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV), "Team Away not found correctly");
+				final WebElement teamAwayDiv = driver.findElement(BY_TEAM_AWAY_DIV);
+				final WebElement scoreAwayDiv = teamAwayDiv.findElement(BY_SCORE_AWAY_DIV);
+				final WebElement teamAwayLink = teamAwayDiv.findElement(BY_TEAM_LINK);
+				final String teamAwayShortCode = StringUtils.substringBetween(teamAwayLink.getAttribute("href"), TEAM_LINK,
 						"/");
 
-				Team teamAway = teamRepository.findByShortCode(teamAwayShortCode);
+				final Team teamAway = teamRepository.findByShortCode(teamAwayShortCode);
 				log.info("Team Away {}", teamAway);
 
-				Game game = gameRepository.findByNbaId(gameId);
+				final Game game = gameRepository.findByNbaId(gameId);
 				game.setTeamHome(teamHome);
 				game.setTeamAway(teamAway);
 				game.setTeamAwayScore(Integer.valueOf(scoreAwayDiv.getText()));
@@ -107,9 +107,9 @@ public class StatisticListener implements Constants {
 				gameRepository.save(game);
 
 				// Statistics Home
-//		List<WebElement> statisticHomeRows =  waitFor(wait, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_HOME_ROWS), "Statistic Home Rows not found correctly");
-				List<WebElement> statisticHomeRows = driver.findElements(BY_STATISTIC_HOME_ROWS);
-				for (WebElement statisticRow : statisticHomeRows) {
+				//		List<WebElement> statisticHomeRows =  waitFor(wait, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_HOME_ROWS), "Statistic Home Rows not found correctly");
+				final List<WebElement> statisticHomeRows = driver.findElements(BY_STATISTIC_HOME_ROWS);
+				for (final WebElement statisticRow : statisticHomeRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
 						Statistic statistic = parseStatisticRow(statisticRow);
 						if (statistic != null) {
@@ -121,9 +121,9 @@ public class StatisticListener implements Constants {
 				}
 
 				// Statistics Away
-//		List<WebElement> statisticAwayRows =  waitFor(wait, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_AWAY_ROWS), "Statistic Away Rows not found correctly");
-				List<WebElement> statisticAwayRows = driver.findElements(BY_STATISTIC_AWAY_ROWS);
-				for (WebElement statisticRow : statisticAwayRows) {
+				//		List<WebElement> statisticAwayRows =  waitFor(wait, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_AWAY_ROWS), "Statistic Away Rows not found correctly");
+				final List<WebElement> statisticAwayRows = driver.findElements(BY_STATISTIC_AWAY_ROWS);
+				for (final WebElement statisticRow : statisticAwayRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
 						Statistic statistic = parseStatisticRow(statisticRow);
 						if (statistic != null) {
@@ -140,10 +140,10 @@ public class StatisticListener implements Constants {
 			driver.close();
 		}
 
-		Long endTimeInSec = Instant.now().getEpochSecond();
+		final Long endTimeInSec = Instant.now().getEpochSecond();
 
 		// Logeamos + telegram
-		String text = String.format("Estadisticas obtenidas para los partidos %s. Tiempo %s segs.",
+		final String text = String.format("Estadisticas obtenidas para los partidos %s. Tiempo %s segs.",
 				statisticMessage.getGameIds(), endTimeInSec - startTimeInSec);
 		log.info(text);
 		telegramService.sendMessage(text);
@@ -151,10 +151,10 @@ public class StatisticListener implements Constants {
 
 	private Statistic parseStatisticRow(WebElement statisticRow) {
 
-		Statistic statistic = new Statistic();
+		final Statistic statistic = new Statistic();
 
-		WebElement playerLink = statisticRow.findElement(BY_PLAYER_LINK);
-		String nbaId = StringUtils.substringAfter(playerLink.getAttribute("href"), PLAYER_LINK);
+		final WebElement playerLink = statisticRow.findElement(BY_PLAYER_LINK);
+		final String nbaId = StringUtils.substringAfter(playerLink.getAttribute("href"), PLAYER_LINK);
 
 		Player player = playerRepository.findPlayerByNbaId(nbaId);
 		if (player == null) {
@@ -183,10 +183,10 @@ public class StatisticListener implements Constants {
 			if (tirosTotales.length == 2) {
 				tirosTotAnotados = tirosTotales[0] != null && !"".equals(tirosTotales[0])
 						? Integer.parseInt(tirosTotales[0])
-						: 0;
-				tirosTotRealizados = tirosTotales[1] != null && !"".equals(tirosTotales[1])
-						? Integer.parseInt(tirosTotales[1])
-						: 0;
+								: 0;
+						tirosTotRealizados = tirosTotales[1] != null && !"".equals(tirosTotales[1])
+								? Integer.parseInt(tirosTotales[1])
+										: 0;
 			}
 
 			Integer tiros3Anotados = null;
@@ -204,10 +204,10 @@ public class StatisticListener implements Constants {
 			if (tirosLibres.length == 2) {
 				tirosLibresAnotados = tirosLibres[0] != null && !"".equals(tirosLibres[0])
 						? Integer.parseInt(tirosLibres[0])
-						: 0;
-				tirosLibresRealizados = tirosLibres[1] != null && !"".equals(tirosLibres[1])
-						? Integer.parseInt(tirosLibres[1])
-						: 0;
+								: 0;
+						tirosLibresRealizados = tirosLibres[1] != null && !"".equals(tirosLibres[1])
+								? Integer.parseInt(tirosLibres[1])
+										: 0;
 			}
 
 			final String rebotes = statisticRow.findElement(By.cssSelector("td:nth-child(8)")).getText();
