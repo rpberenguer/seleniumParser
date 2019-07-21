@@ -19,9 +19,9 @@ public class TransactionParserController {
 	@PostMapping(value = "/parser/transactions")
 	public String getLastTransactions() throws MalformedURLException {
 
-		log.info("Inicio parseo staistics");
+		log.info("Inicio parseo transactions");
 		service.getLastTransactions();
-		log.info("Fin parseo statistics");
+		log.info("Fin parseo transactions");
 
 		return "Parseo Transacciones OK";
 	}
