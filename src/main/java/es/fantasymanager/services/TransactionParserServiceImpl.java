@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.testng.Assert;
 
+import es.fantasymanager.configuration.YAMLConfig;
 import es.fantasymanager.data.repository.ParameterRepository;
 import es.fantasymanager.services.interfaces.TransactionParserService;
 import es.fantasymanager.utils.Constants;
@@ -35,6 +36,9 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 	@Autowired
 	private transient ParameterRepository parameterRepository;
 
+	@Autowired
+	private YAMLConfig myConfig;
+
 	@Override
 	@Transactional
 	public void getLastTransactions() throws MalformedURLException {
@@ -42,13 +46,12 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		log.info("Transaction Parser Started! " + Thread.currentThread().getId());
 
 		// Driver
-		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		WebDriver driver = new ChromeDriver();
 		WebDriverWait wait = new WebDriverWait(driver, 5);
 		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
 
 		// Login
-		FantasyManagerHelper.login(driver, wait, URL_RECENT_ACTIVITY);
+		FantasyManagerHelper.login(driver, wait, URL_RECENT_ACTIVITY + myConfig.getLeagueId());
 
 		try {
 			// parametro de ultima transaccion

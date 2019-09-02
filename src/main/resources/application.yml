@@ -9,6 +9,7 @@ logging:
     es.fantasymanager: debug
   
 spring:
+  profiles: test
   h2:
     console:
       enabled: true
@@ -49,3 +50,12 @@ scheduled:
 telegram:
   token: 714506880:AAEQrW0ifef2fDZzlFtlcHSuWHflNaIWN8I
   chatId: fantasyManagerChannel
+  
+leagueId: 511966
+
+---
+
+spring:
+  profiles: prod
+  
+leagueId: 97189

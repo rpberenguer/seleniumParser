@@ -40,7 +40,6 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 		log.info("Fantasy Team Parser Started! " + Thread.currentThread().getId());
 
 		// Driver
-		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		final WebDriver driver = new ChromeDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 

@@ -16,7 +16,7 @@ public interface Constants {
 	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
 //	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
 	public static final String URL_LEGAUE_ROSTERS = "http://fantasy.espn.com/basketball/league/rosters?leagueId=97189";
-	public static final String URL_RECENT_ACTIVITY = "http://fantasy.espn.com/basketball/recentactivity?leagueId=97189";
+	public static final String URL_RECENT_ACTIVITY = "http://fantasy.espn.com/basketball/recentactivity?leagueId=";
 
 	/********************************
 	 *********** LOGIN **************
