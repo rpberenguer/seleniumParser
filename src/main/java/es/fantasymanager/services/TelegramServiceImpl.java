@@ -20,7 +20,7 @@ public class TelegramServiceImpl implements TelegramService {
 	@Value("${telegram.token}")
 	private String token;
 
-	@Value("@${telegram.chatId}")
+	@Value("${telegram.chatId}")
 	private String chatId;
 
 	@Override

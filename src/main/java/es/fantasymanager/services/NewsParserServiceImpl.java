@@ -40,10 +40,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NewsParserServiceImpl implements NewsParserService, Constants {
 
-	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder()
-			.parseCaseInsensitive()
+	private static final DateTimeFormatter formatter = new DateTimeFormatterBuilder().parseCaseInsensitive()
 			.appendPattern("MMM d, yyyy, h:mm a z")
-			//			.parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue())
+			// .parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue())
 			.toFormatter(Locale.getDefault());
 
 	@Autowired
@@ -70,24 +69,26 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 
 		log.info("Parse News Started! " + Thread.currentThread().getId());
 
-		//		Locale.setDefault(Locale.ENGLISH);
+		// Locale.setDefault(Locale.ENGLISH);
 
 		// Driver
-		//		System.setProperty("webdriver.chrome.driver", "D:\\webdrivers\\chromedriver.exe");
-		//		System.setProperty("webdriver.chrome.driver", "/usr/lib/chromium-browser/chromedriver");
-		//		System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver");
+		// System.setProperty("webdriver.chrome.driver",
+		// "D:\\webdrivers\\chromedriver.exe");
+		// System.setProperty("webdriver.chrome.driver",
+		// "/usr/lib/chromium-browser/chromedriver");
+		// System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver");
 
-		//		WebDriver driver = new FirefoxDriver();
+		// WebDriver driver = new FirefoxDriver();
 
-		//		hub.setupDriver("chrome");
-		//		final WebDriver driver = hub.getDriver();
+		// hub.setupDriver("chrome");
+		// final WebDriver driver = hub.getDriver();
 		final WebDriver driver = new ChromeDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {
 			driver.get(URL_ROTOWORLD_NEWS);
 
-			//			telegramService.sendImageFromUrl();
+			// telegramService.sendImageFromUrl();
 
 			final List<WebElement> tableNewsList = wait
 					.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_ROTOWORLD_NEWS_LIST));
@@ -96,9 +97,9 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 				parserNewsInfo(newsRow);
 			}
 
-			//			String text = "<b>raul perez berenguer</b>\r\n" + " El mejor!!!\r\n";
-			//			String textWithEmoji = EmojiParser.parseToUnicode("emoji: :smile:" + text);
-			//			telegramService.sendMessage(textWithEmoji);
+			// String text = "<b>raul perez berenguer</b>\r\n" + " El mejor!!!\r\n";
+			// String textWithEmoji = EmojiParser.parseToUnicode("emoji: :smile:" + text);
+			// telegramService.sendMessage(textWithEmoji);
 
 		} catch (final Exception e) {
 			log.error("Error tratando news.", e);
@@ -156,7 +157,7 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 			return;
 		}
 
-		//		log.info("href {}, player {}", href, playerName);
+		// log.info("href {}, player {}", href, playerName);
 
 		// Title
 		try {
@@ -185,14 +186,13 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 		final List<StatisticAvgDto> statistics = statisticService
 				.getStatisticsAvg(DateUtils.asLocalDate(season.getStartDate()), LocalDate.now(), player.getNbaId());
 
-		if (statistics.isEmpty()) {
-			throw new Exception("Estadisticas vacías para el jugador: " + player.getNbaId());
-		}
-
-		if (statistics.get(0).getFantasyPointsAvg() > FANTASYPOINTS_TO_SEND_WARNING) {
-			telegramService.sendMessage(text, EMOJI_WARNING);
-		} else {
+		// Si no tiene estadisticas o tiene una media inferior al limite, no enviamos
+		// emoji
+		if (statistics.isEmpty() || statistics.get(0).getFantasyPointsAvg() == null
+				|| statistics.get(0).getFantasyPointsAvg() < FANTASYPOINTS_TO_SEND_WARNING) {
 			telegramService.sendMessage(text);
+		} else {
+			telegramService.sendMessage(text, EMOJI_WARNING);
 		}
 
 	}

@@ -49,7 +49,9 @@ public interface Constants {
 	public static final String ROSTER_LINK = "/nba/team/roster/_/name/";
 	public static final String PLAYER_LINK = "/nba/player/_/id/";
 	public static final By BY_ROSTER_LINK = By.xpath("//a[starts-with(@href, '" + ROSTER_LINK + "')]");
-	public static final By BY_PLAYER_LINK = By.xpath(".//a[starts-with(@href, '" + URL_ESPN + PLAYER_LINK + "')]");
+	public static final By BY_PLAYER_LINK = By
+			.xpath(".//tbody/tr/td[2]/span/a[starts-with(@href, '" + URL_ESPN + PLAYER_LINK + "')]");
+//	public static final By BY_PLAYER_LINK = By.xpath(".//tbody/tr/td[1]");
 
 	/********************************
 	 *********** STATISTIC **********

@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.testng.Assert;
 
-import es.fantasymanager.configuration.YAMLConfig;
+import es.fantasymanager.configuration.SeleniumConfig;
 import es.fantasymanager.data.repository.ParameterRepository;
 import es.fantasymanager.services.interfaces.TransactionParserService;
 import es.fantasymanager.utils.Constants;
@@ -37,7 +37,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 	private transient ParameterRepository parameterRepository;
 
 	@Autowired
-	private YAMLConfig myConfig;
+	private SeleniumConfig myConfig;
 
 	@Override
 	@Transactional
@@ -51,7 +51,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
 
 		// Login
-		FantasyManagerHelper.login(driver, wait, URL_RECENT_ACTIVITY + myConfig.getLeagueId());
+		FantasyManagerHelper.login(driver, wait, myConfig.getUrlRecentAtivity());
 
 		try {
 			// parametro de ultima transaccion
@@ -61,7 +61,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			String formatDateTime = lastTransactionDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 			log.debug("Formatted Time: " + formatDateTime);
 
-			// Seleccionamos fecha de transacciones en el combo
+			// Seleccionamos fecha de transacciones en el combo 'Start Date'
 			final WebElement webElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
 					By.cssSelector(String.format(TRANSACTIONS_START_DATE_OPTIONS, formatDateTime))));
 
@@ -102,14 +102,15 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 	private void getTransactionsByPage(WebDriver driver) {
 		log.debug("-------- getTransactionsByPage ---------");
 
-		WebDriverWait wait = new WebDriverWait(driver, 5);
+//		WebDriverWait wait = new WebDriverWait(driver, 5);
 
 //		try {
 //			Thread.sleep(1000);
 
 		// Buscamos transacciones
-		final List<WebElement> transactionList = wait.until(ExpectedConditions
-				.refreshed(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_TRANSACTION_SPAN_LIST)));
+//		final List<WebElement> transactionList = wait.until(ExpectedConditions
+//				.refreshed(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_TRANSACTION_SPAN_LIST)));
+		final List<WebElement> transactionList = driver.findElements(BY_TRANSACTION_SPAN_LIST);
 
 		Collections.reverse(transactionList);
 		String action = null;

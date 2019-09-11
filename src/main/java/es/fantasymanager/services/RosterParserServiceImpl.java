@@ -45,8 +45,8 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 
 		// Get driver
 
-		//		hub.setupDriver("chrome");
-		//		WebDriver driver = hub.getDriver();
+		// hub.setupDriver("chrome");
+		// WebDriver driver = hub.getDriver();
 		final WebDriver driver = new ChromeDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
@@ -57,8 +57,8 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			log.info("Title: " + driver.getTitle());
 
 			// Team Links
-			final List<WebElement> teamLinks = wait.until(
-					ExpectedConditions.presenceOfAllElementsLocatedBy(BY_ROSTER_LINK));
+			final List<WebElement> teamLinks = wait
+					.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_ROSTER_LINK));
 
 			for (final WebElement teamLink : teamLinks) {
 
@@ -76,18 +76,18 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			}
 
 			final List<Team> teams = (List<Team>) teamRespository.findAll();
-			//			WebDriverWait wait = new WebDriverWait(driver, 90);
+			// WebDriverWait wait = new WebDriverWait(driver, 90);
 			for (final Team team : teams) {
 				// Get Roster URL
 				driver.get(URL_ESPN + ROSTER_LINK + team.getShortCode() + "/" + team.getLongCode());
 
 				// Players Links
-				final List<WebElement> playerLinks = wait.until(
-						ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PLAYER_LINK));
+				final List<WebElement> playerLinks = wait
+						.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PLAYER_LINK));
 
 				for (final WebElement playerLink : playerLinks) {
 					final String hrefPlayer = playerLink.getAttribute("href");
-					final String nbaId = StringUtils.substringAfter(hrefPlayer, PLAYER_LINK);
+					final String nbaId = StringUtils.substringBetween(hrefPlayer, PLAYER_LINK, "/");
 
 					final Player player = new Player();
 					player.setName(playerLink.getText());

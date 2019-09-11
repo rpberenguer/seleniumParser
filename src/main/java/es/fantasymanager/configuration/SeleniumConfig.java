@@ -8,10 +8,11 @@ import lombok.Data;
 
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties
+@ConfigurationProperties("selenium")
 @Data
-public class YAMLConfig {
+public class SeleniumConfig {
 
 	private String leagueId;
+	private String urlRecentAtivity;
 
 }

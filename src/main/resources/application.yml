@@ -9,13 +9,12 @@ logging:
     es.fantasymanager: debug
   
 spring:
-  profiles: test
   h2:
     console:
       enabled: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fantasymanager?useSSL=false
+    url: jdbc:mysql://localhost:3306/fantasymanagerTest?useSSL=false
     username: fantasymanager
     password: fantasymanager
   jpa:
@@ -49,13 +48,23 @@ scheduled:
     
 telegram:
   token: 714506880:AAEQrW0ifef2fDZzlFtlcHSuWHflNaIWN8I
-  chatId: fantasyManagerChannel
+  #chatId: fantasyManagerChannel
+  chatId: -352055855
+ 
+selenium:
+  leagueId: 511966
+  url-recent-ativity: http://fantasy.espn.com/basketball/recentactivity?leagueId=${selenium.leagueId}
   
-leagueId: 511966
-
 ---
 
 spring:
   profiles: prod
   
-leagueId: 97189
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/fantasymanager?useSSL=false
+    username: fantasymanager
+    password: fantasymanager
+  
+selenium:
+  leagueId: 97189
