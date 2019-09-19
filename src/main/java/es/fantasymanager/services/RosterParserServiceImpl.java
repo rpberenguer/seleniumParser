@@ -44,7 +44,6 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 		log.info("Roster Parser Started! " + Thread.currentThread().getId());
 
 		// Get driver
-
 		// hub.setupDriver("chrome");
 		// WebDriver driver = hub.getDriver();
 		final WebDriver driver = new ChromeDriver();
@@ -63,7 +62,6 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 			for (final WebElement teamLink : teamLinks) {
 
 				final String hrefTeam = teamLink.getAttribute("href");
-				log.debug("Team link {}", hrefTeam);
 
 				final String[] codes = StringUtils.substringAfter(hrefTeam, ROSTER_LINK).split("/");
 				final Team team = new Team();
@@ -72,6 +70,7 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 				final String name = teamLink.findElement(By.xpath("./../../../a/h2")).getText();
 				team.setName(name);
 
+				log.debug("Team {}", team);
 				teamRespository.save(team);
 			}
 
@@ -83,17 +82,24 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 
 				// Players Links
 				final List<WebElement> playerLinks = wait
-						.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PLAYER_LINK));
+						.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PLAYER_LINK_IN_ROSTER));
 
 				for (final WebElement playerLink : playerLinks) {
 					final String hrefPlayer = playerLink.getAttribute("href");
 					final String nbaId = StringUtils.substringBetween(hrefPlayer, PLAYER_LINK, "/");
 
-					final Player player = new Player();
-					player.setName(playerLink.getText());
-					player.setNbaId(nbaId);
-					player.setTeam(team);
+					Player player = playerRespository.findPlayerByNbaId(nbaId);
 
+					if (player == null) {
+						player = new Player();
+						player.setName(playerLink.getText());
+						player.setNbaId(nbaId);
+						player.setTeam(team);
+					} else {
+						log.warn("Player {} duplicado.", player);
+					}
+
+					log.debug("Player {}", player);
 					playerRespository.save(player);
 				}
 			}

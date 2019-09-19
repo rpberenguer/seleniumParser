@@ -55,14 +55,13 @@ public class StatisticListener implements Constants {
 	@Autowired
 	private transient TelegramService telegramService;
 
-	@JmsListener(destination = STATISTIC_QUEUE)
+	@JmsListener(destination = STATISTIC_QUEUE, containerFactory = "myFactory")
 	public void receiveMessage(@Payload StatisticJmsMessageData statisticMessage, @Headers MessageHeaders headers,
 			Message message, Session session) throws JMSException, IOException {
 
 		log.info("Received <---" + statisticMessage + "--->");
 
 		// Driver
-		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
 		final WebDriver driver = new ChromeDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
@@ -75,25 +74,23 @@ public class StatisticListener implements Constants {
 
 				driver.get(URL_ESPN + BOXSCORE_LINK + gameId);
 
-				//			// Team Home
-				//		WebElement teamHomeDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV), "Team Home not found correctly");
-				//		WebElement teamHomeDiv = driver.findElement(BY_TEAM_HOME_DIV);
-				final WebElement teamHomeDiv = wait.until(ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV));
+				// Team Home
+				final WebElement teamHomeDiv = wait
+						.until(ExpectedConditions.visibilityOfElementLocated(BY_TEAM_HOME_DIV));
 				final WebElement scoreHomeDiv = teamHomeDiv.findElement(BY_SCORE_HOME_DIV);
 				final WebElement teamHomeLink = teamHomeDiv.findElement(BY_TEAM_LINK);
-				final String teamHomeShortCode = StringUtils.substringBetween(teamHomeLink.getAttribute("href"), TEAM_LINK,
-						"/");
+				final String teamHomeShortCode = StringUtils.substringBetween(teamHomeLink.getAttribute("href"),
+						TEAM_LINK, "/");
 
 				final Team teamHome = teamRepository.findByShortCode(teamHomeShortCode);
 				log.info("Team Home {}", teamHome);
 
 				// Team Away
-				//	WebElement teamAwayDiv = waitFor(wait, ExpectedConditions.visibilityOfElementLocated(BY_TEAM_AWAY_DIV), "Team Away not found correctly");
 				final WebElement teamAwayDiv = driver.findElement(BY_TEAM_AWAY_DIV);
 				final WebElement scoreAwayDiv = teamAwayDiv.findElement(BY_SCORE_AWAY_DIV);
 				final WebElement teamAwayLink = teamAwayDiv.findElement(BY_TEAM_LINK);
-				final String teamAwayShortCode = StringUtils.substringBetween(teamAwayLink.getAttribute("href"), TEAM_LINK,
-						"/");
+				final String teamAwayShortCode = StringUtils.substringBetween(teamAwayLink.getAttribute("href"),
+						TEAM_LINK, "/");
 
 				final Team teamAway = teamRepository.findByShortCode(teamAwayShortCode);
 				log.info("Team Away {}", teamAway);
@@ -107,7 +104,6 @@ public class StatisticListener implements Constants {
 				gameRepository.save(game);
 
 				// Statistics Home
-				//		List<WebElement> statisticHomeRows =  waitFor(wait, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_HOME_ROWS), "Statistic Home Rows not found correctly");
 				final List<WebElement> statisticHomeRows = driver.findElements(BY_STATISTIC_HOME_ROWS);
 				for (final WebElement statisticRow : statisticHomeRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
@@ -121,7 +117,6 @@ public class StatisticListener implements Constants {
 				}
 
 				// Statistics Away
-				//		List<WebElement> statisticAwayRows =  waitFor(wait, ExpectedConditions.visibilityOfAllElementsLocatedBy(BY_STATISTIC_AWAY_ROWS), "Statistic Away Rows not found correctly");
 				final List<WebElement> statisticAwayRows = driver.findElements(BY_STATISTIC_AWAY_ROWS);
 				for (final WebElement statisticRow : statisticAwayRows) {
 					if (!"highlight".equals(statisticRow.getAttribute("class"))) {
@@ -154,7 +149,7 @@ public class StatisticListener implements Constants {
 		final Statistic statistic = new Statistic();
 
 		final WebElement playerLink = statisticRow.findElement(BY_PLAYER_LINK);
-		final String nbaId = StringUtils.substringAfter(playerLink.getAttribute("href"), PLAYER_LINK);
+		final String nbaId = StringUtils.substringBetween(playerLink.getAttribute("href"), PLAYER_LINK, "/");
 
 		Player player = playerRepository.findPlayerByNbaId(nbaId);
 		if (player == null) {
@@ -183,10 +178,10 @@ public class StatisticListener implements Constants {
 			if (tirosTotales.length == 2) {
 				tirosTotAnotados = tirosTotales[0] != null && !"".equals(tirosTotales[0])
 						? Integer.parseInt(tirosTotales[0])
-								: 0;
-						tirosTotRealizados = tirosTotales[1] != null && !"".equals(tirosTotales[1])
-								? Integer.parseInt(tirosTotales[1])
-										: 0;
+						: 0;
+				tirosTotRealizados = tirosTotales[1] != null && !"".equals(tirosTotales[1])
+						? Integer.parseInt(tirosTotales[1])
+						: 0;
 			}
 
 			Integer tiros3Anotados = null;
@@ -204,10 +199,10 @@ public class StatisticListener implements Constants {
 			if (tirosLibres.length == 2) {
 				tirosLibresAnotados = tirosLibres[0] != null && !"".equals(tirosLibres[0])
 						? Integer.parseInt(tirosLibres[0])
-								: 0;
-						tirosLibresRealizados = tirosLibres[1] != null && !"".equals(tirosLibres[1])
-								? Integer.parseInt(tirosLibres[1])
-										: 0;
+						: 0;
+				tirosLibresRealizados = tirosLibres[1] != null && !"".equals(tirosLibres[1])
+						? Integer.parseInt(tirosLibres[1])
+						: 0;
 			}
 
 			final String rebotes = statisticRow.findElement(By.cssSelector("td:nth-child(8)")).getText();
