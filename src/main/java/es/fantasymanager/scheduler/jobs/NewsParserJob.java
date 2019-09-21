@@ -38,7 +38,6 @@ public class NewsParserJob extends AbstractCronJob implements Job {
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 		log.info("Executing Job {}", this.getClass().getName());
 
-
 		try {
 			service.parseNews();
 		} catch (final MalformedURLException e) {

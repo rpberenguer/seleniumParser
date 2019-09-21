@@ -8,8 +8,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.List;
 import java.util.Locale;
 
-import javax.transaction.Transactional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -19,6 +17,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import es.fantasymanager.data.business.StatisticAvgDto;
@@ -69,17 +68,14 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 
 		log.info("Parse News Started! " + Thread.currentThread().getId());
 
-		// Locale.setDefault(Locale.ENGLISH);
+//		final News news = new News();
+//		news.setTitle("abc");
+//
+//		newsRepository.save(news);
+//
+//		throw new RuntimeException("not found...");
 
 		// Driver
-		// System.setProperty("webdriver.chrome.driver",
-		// "D:\\webdrivers\\chromedriver.exe");
-		// System.setProperty("webdriver.chrome.driver",
-		// "/usr/lib/chromium-browser/chromedriver");
-		// System.setProperty("webdriver.gecko.driver", "/usr/local/bin/geckodriver");
-
-		// WebDriver driver = new FirefoxDriver();
-
 		// hub.setupDriver("chrome");
 		// final WebDriver driver = hub.getDriver();
 		final WebDriver driver = new ChromeDriver();

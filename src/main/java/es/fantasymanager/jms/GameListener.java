@@ -25,6 +25,7 @@ import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.fantasymanager.data.entity.Game;
 import es.fantasymanager.data.jms.GameJmsMessageData;
@@ -46,12 +47,23 @@ public class GameListener implements Constants {
 	private JmsTemplate jmsTemplate;
 
 	@JmsListener(destination = GAME_QUEUE, containerFactory = "myFactory")
+	@Transactional
 	public void receiveMessage(@Payload GameJmsMessageData gameMessage, @Headers MessageHeaders headers,
 			Message message, Session session) throws JMSException {
 
 		log.info("Received <---" + gameMessage + "--->");
 
-//		throw new NoSuchElementException("not found...");
+//		LocalDate startDate = gameMessage.getStartDate();
+//
+//		Game game = new Game();
+//		game.setNbaId("AAAA");
+//
+//		final Date date = Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+//		game.setDate(date);
+//
+//		gameRepository.save(game);
+//
+//		throw new RuntimeException("not found...");
 
 		// Driver
 		final WebDriver driver = new ChromeDriver();
