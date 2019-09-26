@@ -49,11 +49,14 @@ scheduled:
 telegram:
   token: 714506880:AAEQrW0ifef2fDZzlFtlcHSuWHflNaIWN8I
   #chatId: fantasyManagerChannel
-  chatId: -352055855
+  newsChatId: -352055855
+  transactionsChatId: -360686582
+  tradesChatId: -360686582
  
 selenium:
   leagueId: 511966
   url-recent-ativity: http://fantasy.espn.com/basketball/recentactivity?leagueId=${selenium.leagueId}
+  url-league-rosters: http://fantasy.espn.com/basketball/league/rosters?leagueId=${selenium.leagueId}
   
 ---
 

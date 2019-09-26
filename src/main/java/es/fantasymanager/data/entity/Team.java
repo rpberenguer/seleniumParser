@@ -17,12 +17,12 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name="TEAM")
+@Table(name = "TEAM")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString(exclude = {"players", "gamesHome", "gamesAway"})
+@ToString(exclude = { "players" })
 public class Team {
 
 	@Id
@@ -41,11 +41,5 @@ public class Team {
 
 	@OneToMany(mappedBy = "team")
 	private List<Player> players;
-
-	@OneToMany(mappedBy = "teamHome")
-	private List<Game> gamesHome;
-
-	@OneToMany(mappedBy = "teamAway")
-	private List<Game> gamesAway;
 
 }

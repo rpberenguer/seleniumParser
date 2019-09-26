@@ -1,6 +1,7 @@
 package es.fantasymanager.services;
 
 import java.net.MalformedURLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -14,9 +15,12 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import es.fantasymanager.configuration.SeleniumConfig;
 import es.fantasymanager.data.entity.FantasyTeam;
+import es.fantasymanager.data.entity.Parameter;
 import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.repository.FantasyTeamRepository;
+import es.fantasymanager.data.repository.ParameterRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.services.interfaces.FantasyTeamParserService;
 import es.fantasymanager.utils.Constants;
@@ -28,10 +32,16 @@ import lombok.extern.slf4j.Slf4j;
 public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, Constants {
 
 	@Autowired
-	private transient FantasyTeamRepository fantasyTeamRespository;
+	private transient FantasyTeamRepository fantasyTeamRepository;
 
 	@Autowired
-	private transient PlayerRepository playerRespository;
+	private transient PlayerRepository playerRepository;
+
+	@Autowired
+	private transient ParameterRepository parameterRepository;
+
+	@Autowired
+	private SeleniumConfig myConfig;
 
 	@Override
 	@Transactional
@@ -44,7 +54,7 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Login
-		FantasyManagerHelper.login(driver, wait, URL_LEGAUE_ROSTERS);
+		FantasyManagerHelper.login(driver, wait, myConfig.getUrlLeagueRosters());
 
 		try {
 			// Team Links
@@ -55,7 +65,7 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 
 				// Buscamos titulo del equipo fantasy
 				final WebElement fantasyTeamSpan = fantasyTeamElement.findElement(BY_FANTASY_TEAM_TITLE);
-				final FantasyTeam fantasyTeam = fantasyTeamRespository.findByTeamName(fantasyTeamSpan.getText());
+				final FantasyTeam fantasyTeam = fantasyTeamRepository.findByTeamName(fantasyTeamSpan.getText());
 				if (fantasyTeam == null) {
 					log.error("Fantasy Team no encontrado {}", fantasyTeamSpan.getText());
 					continue;
@@ -73,7 +83,7 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 					log.debug("Player nbaId {}", nbaId);
 
 					// Buscamos jugador y lo asociamos al equipo fantasy
-					final Player player = playerRespository.findPlayerByNbaId(nbaId);
+					final Player player = playerRepository.findPlayerByNbaId(nbaId);
 
 					if (player == null) {
 						log.error("Player no encontrado {}", nbaId);
@@ -81,9 +91,15 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 					}
 
 					player.setFantasyTeam(fantasyTeam);
-					playerRespository.save(player);
+					playerRepository.save(player);
 				}
 			}
+
+			// guardamos el param lastTransaction con la fecha actual
+			LocalDateTime lastTransactionDate = LocalDateTime.now();
+			Parameter parameter = parameterRepository.findByCode(LAST_TRANSACTION_DATE);
+			parameter.setValue(lastTransactionDate.format(formatterTransaction));
+			parameterRepository.save(parameter);
 
 		} finally {
 			// Quit driver

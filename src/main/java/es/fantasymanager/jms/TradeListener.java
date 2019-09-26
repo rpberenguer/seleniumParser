@@ -21,6 +21,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import es.fantasymanager.configuration.TelegramConfig;
 import es.fantasymanager.data.jms.TradeJmsMessageData;
 import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.utils.Constants;
@@ -33,8 +34,11 @@ public class TradeListener implements Constants {
 	@Autowired
 	private transient TelegramService telegramService;
 
-	//	@Autowired
-	//	private SeleniumGridDockerHub hub;
+	@Autowired
+	private TelegramConfig telegramConfig;
+
+	// @Autowired
+	// private SeleniumGridDockerHub hub;
 
 	@Deprecated
 	@JmsListener(destination = TRADE_QUEUE)
@@ -44,11 +48,12 @@ public class TradeListener implements Constants {
 		log.info("Received <---" + tradeMessage + "--->");
 
 		// Get driver
-		//		hub.setupDriver("chrome");
-		//		WebDriver driver = hub.getDriver();
+		// hub.setupDriver("chrome");
+		// WebDriver driver = hub.getDriver();
 
 		// Driver
-		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		// System.setProperty("webdriver.chrome.driver",
+		// "E:\\webdrivers\\chromedriver.exe");
 		final WebDriver driver = new ChromeDriver();
 		// Print the webdriver
 		log.info("Webdriver: " + driver.toString());
@@ -58,7 +63,7 @@ public class TradeListener implements Constants {
 		final long startTimeInSec = Instant.now().getEpochSecond();
 
 		try {
-			//			synchronized (lock1) {
+			// synchronized (lock1) {
 			driver.get(URL_ADD_PLAYERS);
 
 			// Wait for frame
@@ -81,14 +86,14 @@ public class TradeListener implements Constants {
 			password.sendKeys("ilovethisgame&&&");
 
 			final WebElement signupButton = wait.until(ExpectedConditions.elementToBeClickable(BY_SUBMIT_LOGIN_BUTTON));
-			//				signupButton.click();
+			// signupButton.click();
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", signupButton);
 
 			log.info("Login ok!");
-			//			}
+			// }
 
 			driver.switchTo().defaultContent();
-			//			WebDriverWait wait = new WebDriverWait(driver, 90);
+			// WebDriverWait wait = new WebDriverWait(driver, 90);
 
 			// Find (+) Add Player Linkg & click()
 			final WebElement addPlayerLink = wait.until(ExpectedConditions
@@ -107,26 +112,28 @@ public class TradeListener implements Constants {
 					By.xpath(String.format(REMOVE_PLAYER_LINK, tradeMessage.getPlayerToRemove()))));
 
 			log.info("Player to remove finded.");
-			//			removePlayerLink.click();
+			// removePlayerLink.click();
 			// js executor
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", removePlayerLink);
 
 			// Find continueButton
-			final WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
-			//			WebElement continueButton = wait
-			//					.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.btn.btn--custom.action-buttons")));
+			final WebElement continueButton = wait
+					.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
+			// WebElement continueButton = wait
+			// .until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.btn.btn--custom.action-buttons")));
 			log.info("Continue button finded.");
-			//			continueButton.click();
+			// continueButton.click();
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", continueButton);
 
-			//			WebElement confirmPopup = wait.until(ExpectedConditions
-			//					.visibilityOfElementLocated(By.cssSelector("div.jsx-857643447.confirm-modal__inner.pa4")));
-			//			confirmPopup.click();
+			// WebElement confirmPopup = wait.until(ExpectedConditions
+			// .visibilityOfElementLocated(By.cssSelector("div.jsx-857643447.confirm-modal__inner.pa4")));
+			// confirmPopup.click();
 
 			// Find confirmButton
-			final WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
+			final WebElement confirmButton = wait
+					.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
 			log.info("Confirm button finded.");
-			//			confirmButton.click();
+			// confirmButton.click();
 			((JavascriptExecutor) driver).executeScript("arguments[0].click();", confirmButton);
 
 			// Obtenemos tiempo
@@ -137,7 +144,7 @@ public class TradeListener implements Constants {
 
 			// Logeamos + telegram
 			log.info(text);
-			telegramService.sendMessage(text);
+			telegramService.sendMessage(text, telegramConfig.getTradesChatId());
 
 		} catch (final Exception e) {
 
@@ -146,10 +153,10 @@ public class TradeListener implements Constants {
 
 			// Logeamos + telegram
 			log.error(text, e);
-			telegramService.sendMessage(text);
+			telegramService.sendMessage(text, telegramConfig.getTradesChatId());
 		} finally {
 			// Close
-			//			driver.close();
+			// driver.close();
 		}
 	}
 }

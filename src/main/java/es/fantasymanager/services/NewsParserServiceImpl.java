@@ -1,7 +1,6 @@
 package es.fantasymanager.services;
 
 import java.net.MalformedURLException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
@@ -20,19 +19,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import es.fantasymanager.data.business.StatisticAvgDto;
+import es.fantasymanager.configuration.TelegramConfig;
 import es.fantasymanager.data.entity.News;
 import es.fantasymanager.data.entity.Player;
-import es.fantasymanager.data.entity.Season;
 import es.fantasymanager.data.repository.NewsRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
-import es.fantasymanager.data.repository.SeasonRepository;
 import es.fantasymanager.services.interfaces.NewsParserService;
-import es.fantasymanager.services.interfaces.StatisticService;
-import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.utils.Constants;
-import es.fantasymanager.utils.DateUtils;
-import es.fantasymanager.utils.SeleniumGridDockerHub;
+import es.fantasymanager.utils.FantasyManagerHelper;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -51,16 +45,13 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 	private transient PlayerRepository playerRepository;
 
 	@Autowired
-	private transient SeasonRepository seasonRepository;
+	private transient FantasyManagerHelper fmHelper;
 
 	@Autowired
-	private transient TelegramService telegramService;
+	private TelegramConfig telegramConfig;
 
-	@Autowired
-	private transient StatisticService statisticService;
-
-	@Autowired
-	private SeleniumGridDockerHub hub;
+//	@Autowired
+//	private SeleniumGridDockerHub hub;
 
 	@Override
 	@Transactional
@@ -175,21 +166,8 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 
 		newsRepository.save(news);
 
+		// Enviamos news por telegram
 		final String text = "<b>" + player.getName() + "</b>\r\n" + news.getTitle() + "\r\n";
-
-		final Season season = seasonRepository.findByIsCurrentSeason(true);
-
-		final List<StatisticAvgDto> statistics = statisticService
-				.getStatisticsAvg(DateUtils.asLocalDate(season.getStartDate()), LocalDate.now(), player.getNbaId());
-
-		// Si no tiene estadisticas o tiene una media inferior al limite, no enviamos
-		// emoji
-		if (statistics.isEmpty() || statistics.get(0).getFantasyPointsAvg() == null
-				|| statistics.get(0).getFantasyPointsAvg() < FANTASYPOINTS_TO_SEND_WARNING) {
-			telegramService.sendMessage(text);
-		} else {
-			telegramService.sendMessage(text, EMOJI_WARNING);
-		}
-
+		fmHelper.sendMessageByStatistics(text, telegramConfig.getNewsChatId(), player);
 	}
 }

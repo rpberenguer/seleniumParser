@@ -1,5 +1,6 @@
 package es.fantasymanager.services;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -23,7 +24,13 @@ import org.springframework.util.CollectionUtils;
 import org.testng.Assert;
 
 import es.fantasymanager.configuration.SeleniumConfig;
+import es.fantasymanager.configuration.TelegramConfig;
+import es.fantasymanager.data.entity.FantasyTeam;
+import es.fantasymanager.data.entity.Player;
+import es.fantasymanager.data.repository.FantasyTeamRepository;
 import es.fantasymanager.data.repository.ParameterRepository;
+import es.fantasymanager.data.repository.PlayerRepository;
+import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.services.interfaces.TransactionParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.FantasyManagerHelper;
@@ -34,10 +41,25 @@ import lombok.extern.slf4j.Slf4j;
 public class TransactionParserServiceImpl implements TransactionParserService, Constants {
 
 	@Autowired
+	private transient TelegramService telegramService;
+
+	@Autowired
 	private transient ParameterRepository parameterRepository;
 
 	@Autowired
-	private SeleniumConfig myConfig;
+	private transient PlayerRepository playerRepository;
+
+	@Autowired
+	private transient FantasyTeamRepository fantasyTeamRepository;
+
+	@Autowired
+	private transient FantasyManagerHelper fmHelper;
+
+	@Autowired
+	private SeleniumConfig seleniumConfig;
+
+	@Autowired
+	private TelegramConfig telegramConfig;
 
 	@Override
 	@Transactional
@@ -51,7 +73,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
 
 		// Login
-		FantasyManagerHelper.login(driver, wait, myConfig.getUrlRecentAtivity());
+		FantasyManagerHelper.login(driver, wait, seleniumConfig.getUrlRecentAtivity());
 
 		try {
 			// parametro de ultima transaccion
@@ -69,9 +91,9 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			webElement.click();
 
 			// Buscamos paginas
-			final List<WebElement> paginationNavList = wait
-					.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_PAGINATION_NAV_LIST));
+			final List<WebElement> paginationNavList = driver.findElements(BY_PAGINATION_NAV_LIST);
 
+			// Si hay paginacion
 			if (!CollectionUtils.isEmpty(paginationNavList)) {
 
 				for (int i = paginationNavList.size(); i >= 1; i--) {
@@ -88,12 +110,16 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 					getTransactionsByPage(driver);
 				}
 			}
+			// si no hay paginacion
+			else {
+				getTransactionsByPage(driver);
+			}
 
 		} catch (Exception e) {
 			log.error("Error tratando transactions.", e);
 		} finally {
 			// Quit driver
-//			driver.quit();
+			driver.quit();
 		}
 
 		log.info("Transaction Parser Ended! " + Thread.currentThread().getId());
@@ -110,19 +136,83 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		// Buscamos transacciones
 //		final List<WebElement> transactionList = wait.until(ExpectedConditions
 //				.refreshed(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_TRANSACTION_SPAN_LIST)));
-		final List<WebElement> transactionList = driver.findElements(BY_TRANSACTION_SPAN_LIST);
+		final List<WebElement> transactionList = driver.findElements(BY_TRANSACTION_CELL_DIV);
 
 		Collections.reverse(transactionList);
-		String action = null;
 		for (WebElement webElement : transactionList) {
-			String spanClass = webElement.getAttribute("class");
-			action = StringUtils.substringBetween(spanClass, "waiver-", " db");
-			doAction(webElement, action);
+
+			// doTransaction
+			doTransaction(webElement);
+
 		}
 
 //		} catch (InterruptedException e) {
 //			e.printStackTrace();
 //		}
+	}
+
+	private void doTransaction(WebElement webElement) {
+
+		// buscamos el fantasyTeam
+		WebElement fantasyTeamElement = webElement.findElement(BY_TRANSACTION_FANTASY_TEAM_ELEMENT);
+		String fantasyTeamName = fantasyTeamElement.getAttribute("title");
+
+		// buscamos fantasyTeam
+		FantasyTeam fantasyTeam = fantasyTeamRepository.findByTeamName(fantasyTeamName);
+		if (fantasyTeam == null) {
+			log.error("FantasyTeam con nombre {} no encontrado.", fantasyTeamName);
+			return;
+		}
+
+		String text = "<b>" + fantasyTeamName + "</b>\r\n";
+
+		// los elementos span hijos nos marca si es un added/dropped, add o drop
+		final List<WebElement> spanElements = webElement.findElements(BY_TRANSACTION_DETAILS_SPAN);
+
+		for (WebElement spanElement : spanElements) {
+			text += doAction(spanElement, fantasyTeam);
+		}
+
+		// enviamos transaccion por telegram
+		try {
+			telegramService.sendMessage(text, telegramConfig.getTransactionsChatId());
+		} catch (IOException e) {
+			log.error("Error enviando telegram {}.", text);
+		}
+
+	}
+
+	private String doAction(WebElement spanElement, FantasyTeam fantasyTeam) {
+
+		String spanClass = spanElement.getAttribute("class");
+		String action = StringUtils.substringBetween(spanClass, "waiver-", " db");
+
+		WebElement playerElement = spanElement.findElement(BY_TRANSACTION_PLAYER_ELEMENT);
+		String playerName = playerElement.getText();
+
+		// buscamos jugador
+		Player player = playerRepository.findPlayerByName(playerName);
+		if (player == null) {
+			log.error("Jugador con nombre {} no encontrado.", playerName);
+			return null;
+		}
+
+		if (ACTION_ADD.equals(action)) {
+			player.setFantasyTeam(fantasyTeam);
+		} else if (ACTION_DROP.equals(action)) {
+			player.setFantasyTeam(null);
+		} else {
+			log.error("Action {} no válida.", action);
+			return null;
+		}
+
+		// guardamos jugador
+		playerRepository.save(player);
+
+		log.debug("FantasyTeam {}, action {}, player {}", fantasyTeam.getTeamName(), action, playerName);
+
+		return action + " " + playerName + "\r\n";
+
 	}
 
 	public void waitForLoad(WebDriver driver) {
@@ -139,16 +229,5 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		} catch (Throwable error) {
 			Assert.fail("Timeout waiting for Page Load Request to complete.");
 		}
-	}
-
-	private void doAction(WebElement webElement, String action) {
-		WebElement fantasyTeamElement = webElement.findElement(BY_TRANSACTION_FANTASY_TEAM_ELEMENT);
-		String fantasyTeamName = fantasyTeamElement.getAttribute("title");
-
-		WebElement playerElement = webElement.findElement(BY_TRANSACTION_PLAYER_ELEMENT);
-		String playerName = playerElement.getText();
-
-		log.debug("Team {}, action {}, player {}", fantasyTeamName, playerName, action);
-
 	}
 }

@@ -21,6 +21,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import es.fantasymanager.configuration.TelegramConfig;
 import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.services.interfaces.TelegramService;
@@ -38,17 +39,21 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 	@Autowired
 	private transient PlayerRepository playerRepository;
 
+	@Autowired
+	private TelegramConfig telegramConfig;
+
 	@Override
 	public void doTrade(Map<String, String> tradeMap, LocalDateTime tradeDate) throws IOException {
 
 		log.info("Trade Started! " + Thread.currentThread().getId());
 
 		// Get driver
-		//		hub.setupDriver("chrome");
-		//		WebDriver driver = hub.getDriver();
+		// hub.setupDriver("chrome");
+		// WebDriver driver = hub.getDriver();
 
 		// driver + wait + jsExecutor
-		//		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
+		// System.setProperty("webdriver.chrome.driver",
+		// "E:\\webdrivers\\chromedriver.exe");
 		final WebDriver driver = new ChromeDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 		final JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
@@ -96,7 +101,7 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 						// Esperamos 1 seg
 						Thread.sleep(1000);
 
-						//					driver.switchTo().defaultContent();
+						// driver.switchTo().defaultContent();
 						commitTrade(wait, jsExecutor);
 					}
 				} catch (final InterruptedException e) {
@@ -108,14 +113,15 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 
 		} finally {
 			// Close
-			//			driver.quit();
+			// driver.quit();
 		}
 	}
 
 	private void commitTrade(WebDriverWait wait, JavascriptExecutor jsExecutor) throws IOException {
 		try {
 			// Find confirmButton
-			final WebElement confirmButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
+			final WebElement confirmButton = wait
+					.until(ExpectedConditions.elementToBeClickable(BY_CONFIRM_TRADE_BUTTON));
 			log.info("Confirm button finded.");
 			jsExecutor.executeScript("arguments[0].click();", confirmButton);
 
@@ -125,7 +131,7 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 
 			// Logeamos + telegram
 			log.error(text, e);
-			telegramService.sendMessage(text);
+			telegramService.sendMessage(text, telegramConfig.getTradesChatId());
 		}
 	}
 
@@ -162,23 +168,25 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 			jsExecutor.executeScript("arguments[0].click();", removePlayerLink);
 
 			// Find continueButton
-			final WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
+			final WebElement continueButton = wait
+					.until(ExpectedConditions.elementToBeClickable(BY_CONTINUE_TRADE_BUTTON));
 			log.info("Continue button finded.");
-			//			continueButton.click();
+			// continueButton.click();
 			jsExecutor.executeScript("arguments[0].click();", continueButton);
 
-			//			String text = String.format("Trade de %s por %s, ok!", playerToAdd, playerToRemove);
+			// String text = String.format("Trade de %s por %s, ok!", playerToAdd,
+			// playerToRemove);
 
 			// Logeamos + telegram
-			//			log.info(text);
-			//			telegramService.sendMessage(text);
+			// log.info(text);
+			// telegramService.sendMessage(text);
 		} catch (final Exception e) {
 
 			final String text = String.format("Trade de %s por %s, ko.", playerToAdd, playerToRemove);
 
 			// Logeamos + telegram
 			log.error(text, e);
-			telegramService.sendMessage(text);
+			telegramService.sendMessage(text, telegramConfig.getTradesChatId());
 		}
 	}
 
@@ -205,7 +213,7 @@ public class TradeParserServiceImpl implements TradeParserService, Constants {
 		password.sendKeys("ilovethisgame&&&");
 
 		final WebElement signupButton = wait.until(ExpectedConditions.elementToBeClickable(BY_SUBMIT_LOGIN_BUTTON));
-		//				signupButton.click();
+		// signupButton.click();
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", signupButton);
 
 		log.info("Login ok!");

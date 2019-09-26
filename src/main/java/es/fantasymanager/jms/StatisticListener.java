@@ -23,6 +23,7 @@ import org.springframework.messaging.handler.annotation.Headers;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import es.fantasymanager.configuration.TelegramConfig;
 import es.fantasymanager.data.entity.Game;
 import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.entity.Statistic;
@@ -54,6 +55,9 @@ public class StatisticListener implements Constants {
 
 	@Autowired
 	private transient TelegramService telegramService;
+
+	@Autowired
+	private TelegramConfig telegramConfig;
 
 	@JmsListener(destination = STATISTIC_QUEUE, containerFactory = "myFactory")
 	public void receiveMessage(@Payload StatisticJmsMessageData statisticMessage, @Headers MessageHeaders headers,
@@ -141,7 +145,7 @@ public class StatisticListener implements Constants {
 		final String text = String.format("Estadisticas obtenidas para los partidos %s. Tiempo %s segs.",
 				statisticMessage.getGameIds(), endTimeInSec - startTimeInSec);
 		log.info(text);
-		telegramService.sendMessage(text);
+		telegramService.sendMessage(text, telegramConfig.getNewsChatId());
 	}
 
 	private Statistic parseStatisticRow(WebElement statisticRow) {

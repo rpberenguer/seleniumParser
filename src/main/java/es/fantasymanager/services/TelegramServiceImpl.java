@@ -20,18 +20,15 @@ public class TelegramServiceImpl implements TelegramService {
 	@Value("${telegram.token}")
 	private String token;
 
-	@Value("${telegram.chatId}")
-	private String chatId;
-
 	@Override
-	public String sendMessage(String text, String emoji) throws IOException {
+	public String sendMessage(String text, String chatId, String emoji) throws IOException {
 
 		String textWithEmoji = EmojiParser.parseToUnicode(emoji + text);
-		return sendMessage(textWithEmoji);
+		return sendMessage(textWithEmoji, chatId);
 	}
 
 	@Override
-	public String sendMessage(String text) throws IOException {
+	public String sendMessage(String text, String chatId) throws IOException {
 
 		TelegramBot bot = new TelegramBot(token);
 		// Create your bot passing the token received from @BotFather
@@ -41,7 +38,7 @@ public class TelegramServiceImpl implements TelegramService {
 	}
 
 	@Override
-	public String sendImageFromUrl() {
+	public String sendImageFromUrl(String chatId) {
 		TelegramBot bot = new TelegramBot(token);
 		SendPhoto request = new SendPhoto(chatId,
 				"http://a.espncdn.com/combiner/i?img=/i/headshots/NBA/players/full/3206.png&w=96&h=70");

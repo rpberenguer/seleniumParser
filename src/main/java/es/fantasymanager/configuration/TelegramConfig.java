@@ -8,12 +8,12 @@ import lombok.Data;
 
 @Configuration
 @EnableConfigurationProperties
-@ConfigurationProperties("selenium")
+@ConfigurationProperties("telegram")
 @Data
-public class SeleniumConfig {
+public class TelegramConfig {
 
-	private String leagueId;
-	private String urlRecentAtivity;
-	private String urlLeagueRosters;
+	private String newsChatId;
+	private String transactionsChatId;
+	private String tradesChatId;
 
 }

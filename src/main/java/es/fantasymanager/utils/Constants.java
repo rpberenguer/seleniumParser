@@ -15,8 +15,6 @@ public interface Constants {
 
 	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=511966";
 //	public static final String URL_ADD_PLAYERS = "http://fantasy.espn.com/basketball/players/add?leagueId=97189";
-	public static final String URL_LEGAUE_ROSTERS = "http://fantasy.espn.com/basketball/league/rosters?leagueId=97189";
-	public static final String URL_RECENT_ACTIVITY = "http://fantasy.espn.com/basketball/recentactivity?leagueId=";
 
 	/********************************
 	 *********** LOGIN **************
@@ -109,7 +107,7 @@ public interface Constants {
 	 ************ FANTASY TEAMS ************
 	 ***************************************/
 	public static final By BY_FANTASY_TEAM_DIV = By.cssSelector("div[class='pa1 bg-clr-white br-5 roster-container']");
-	public static final String PLAYER_IMG_PREFIX = "http://a.espncdn.com/combiner/i?img=/i/headshots/NBA/players/full/";
+	public static final String PLAYER_IMG_PREFIX = "https://a.espncdn.com/i/headshots/nba/players/full/";
 	public static final By BY_FANTASY_TEAM_PLAYER_IMG = By.cssSelector("img[src^='" + PLAYER_IMG_PREFIX + "']");
 	public static final By BY_FANTASY_TEAM_TITLE = By.cssSelector("span.teamName.truncate");
 
@@ -117,6 +115,8 @@ public interface Constants {
 	 ************ TRANSACTIONS *************
 	 ***************************************/
 	public static final String LAST_TRANSACTION_DATE = "lastTransaction";
+	public static final String ACTION_ADD = "add";
+	public static final String ACTION_DROP = "drop";
 	public static final DateTimeFormatter formatterTransaction = new DateTimeFormatterBuilder().parseCaseInsensitive()
 			.appendPattern("E MMM d h:mm a").parseDefaulting(ChronoField.YEAR_OF_ERA, Year.now().getValue())
 			.toFormatter(Locale.ENGLISH);
@@ -126,7 +126,8 @@ public interface Constants {
 	public static final By BY_PAGINATION_NAV_LIST = By.cssSelector("div.PaginationNav__wrap.overflow-x-auto ul li");
 	public static final String BY_PAGINATION_NAV_LIST_ELEMENT = "div.PaginationNav__wrap.overflow-x-auto ul li:nth-of-type(%s) a";
 
-	public static final By BY_TRANSACTION_SPAN_LIST = By.cssSelector("span[class*='transaction-details']");
-	public static final By BY_TRANSACTION_FANTASY_TEAM_ELEMENT = By.cssSelector("span > div > span");
+	public static final By BY_TRANSACTION_CELL_DIV = By.cssSelector("div[class*='transactionCell']");
+	public static final By BY_TRANSACTION_DETAILS_SPAN = By.cssSelector("span[class*='transaction-details']");
+	public static final By BY_TRANSACTION_FANTASY_TEAM_ELEMENT = By.cssSelector("span > span > div > span");
 	public static final By BY_TRANSACTION_PLAYER_ELEMENT = By.cssSelector("span > span > a");
 }
