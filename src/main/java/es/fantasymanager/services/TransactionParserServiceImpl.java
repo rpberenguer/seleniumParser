@@ -26,6 +26,7 @@ import org.testng.Assert;
 import es.fantasymanager.configuration.SeleniumConfig;
 import es.fantasymanager.configuration.TelegramConfig;
 import es.fantasymanager.data.entity.FantasyTeam;
+import es.fantasymanager.data.entity.Parameter;
 import es.fantasymanager.data.entity.Player;
 import es.fantasymanager.data.repository.FantasyTeamRepository;
 import es.fantasymanager.data.repository.ParameterRepository;
@@ -52,8 +53,8 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 	@Autowired
 	private transient FantasyTeamRepository fantasyTeamRepository;
 
-	@Autowired
-	private transient FantasyManagerHelper fmHelper;
+//	@Autowired
+//	private transient FantasyManagerHelper fmHelper;
 
 	@Autowired
 	private SeleniumConfig seleniumConfig;
@@ -77,8 +78,8 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 		try {
 			// parametro de ultima transaccion
-			String strLastTransaction = parameterRepository.findByCode(LAST_TRANSACTION_DATE).getValue();
-			LocalDateTime lastTransactionDate = LocalDateTime.parse(strLastTransaction, formatterTransaction);
+			Parameter lastTransactionParameter = parameterRepository.findByCode(LAST_TRANSACTION_DATE);
+			LocalDateTime lastTransactionDate = getLastTransactionDate(lastTransactionParameter);
 
 			String formatDateTime = lastTransactionDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 			log.debug("Formatted Time: " + formatDateTime);
@@ -107,12 +108,12 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 					waitForLoad(driver);
 
-					getTransactionsByPage(driver);
+					getTransactionsByPage(driver, lastTransactionParameter);
 				}
 			}
 			// si no hay paginacion
 			else {
-				getTransactionsByPage(driver);
+				getTransactionsByPage(driver, lastTransactionParameter);
 			}
 
 		} catch (Exception e) {
@@ -125,24 +126,38 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		log.info("Transaction Parser Ended! " + Thread.currentThread().getId());
 	}
 
-	private void getTransactionsByPage(WebDriver driver) {
+	private void getTransactionsByPage(WebDriver driver, Parameter lastTransactionParameter) {
 		log.debug("-------- getTransactionsByPage ---------");
 
-//		WebDriverWait wait = new WebDriverWait(driver, 5);
-
-//		try {
-//			Thread.sleep(1000);
-
-		// Buscamos transacciones
-//		final List<WebElement> transactionList = wait.until(ExpectedConditions
-//				.refreshed(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_TRANSACTION_SPAN_LIST)));
 		final List<WebElement> transactionList = driver.findElements(BY_TRANSACTION_CELL_DIV);
 
+		// ordenamos descendente
 		Collections.reverse(transactionList);
+
+		LocalDateTime lastTransactionDate = getLastTransactionDate(lastTransactionParameter);
+
 		for (WebElement webElement : transactionList) {
 
-			// doTransaction
-			doTransaction(webElement);
+			// validar si la fecha de la transaccion es superior o igual a la que hemos
+			// guardado como parametro
+			WebElement divTransactionDate = webElement.findElement(BY_TRANSACTION_DATE_DIV);
+			String date = divTransactionDate.findElement(BY_TRANSACTION_DATE_DATE_DIV).getText();
+			String time = divTransactionDate.findElement(BY_TRANSACTION_DATE_TIME_DIV).getText();
+
+			LocalDateTime transactionDate = LocalDateTime.parse(date + " " + time, formatterTransaction);
+
+			if (transactionDate.isBefore(lastTransactionDate)) {
+				log.debug("Fecha transaccion anterior: {} {}", date, time);
+			} else {
+				log.debug("Fecha transaccion: {} {}", date, time);
+
+				// doTransaction
+				doTransaction(webElement);
+
+				// actualizamos parametro
+				lastTransactionParameter.setValue(transactionDate.format(formatterTransaction));
+				parameterRepository.save(lastTransactionParameter);
+			}
 
 		}
 
@@ -213,6 +228,13 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 		return action + " " + playerName + "\r\n";
 
+	}
+
+	private static LocalDateTime getLastTransactionDate(Parameter lastTransactionParameter) {
+		String strLastTransaction = lastTransactionParameter.getValue();
+		LocalDateTime lastTransactionDate = LocalDateTime.parse(strLastTransaction, formatterTransaction);
+
+		return lastTransactionDate;
 	}
 
 	public void waitForLoad(WebDriver driver) {
