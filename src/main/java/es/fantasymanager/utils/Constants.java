@@ -127,6 +127,9 @@ public interface Constants {
 	public static final String BY_PAGINATION_NAV_LIST_ELEMENT = "div.PaginationNav__wrap.overflow-x-auto ul li:nth-of-type(%s) a";
 
 	public static final By BY_TRANSACTION_CELL_DIV = By.cssSelector("div[class*='transactionCell']");
+	public static final By BY_TRANSACTION_DATE_DIV = By.xpath("../../../../td[1]/div/div");
+	public static final By BY_TRANSACTION_DATE_DATE_DIV = By.cssSelector("div[class*='date']");
+	public static final By BY_TRANSACTION_DATE_TIME_DIV = By.cssSelector("div[class*='time']");
 	public static final By BY_TRANSACTION_DETAILS_SPAN = By.cssSelector("span[class*='transaction-details']");
 	public static final By BY_TRANSACTION_FANTASY_TEAM_ELEMENT = By.cssSelector("span > span > div > span");
 	public static final By BY_TRANSACTION_PLAYER_ELEMENT = By.cssSelector("span > span > a");
