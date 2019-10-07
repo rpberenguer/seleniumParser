@@ -71,3 +71,14 @@ spring:
   
 selenium:
   leagueId: 97189
+  
+---
+
+spring:
+  profiles: indra
+  
+  datasource:
+    driver-class-name: oracle.jdbc.driver.OracleDriver
+    url: jdbc:oracle:thin:@localhost:1522:xe
+    username: fantasymanager
+    password: fantasymanager
