@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,8 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 		// Driver
 		// hub.setupDriver("chrome");
 		// final WebDriver driver = hub.getDriver();
-		final WebDriver driver = new ChromeDriver();
+//		final WebDriver driver = new ChromeDriver();
+		final WebDriver driver = new FirefoxDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {

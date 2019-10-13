@@ -153,9 +153,9 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			LocalDateTime transactionDate = LocalDateTime.parse(date + " " + time, formatterTransaction);
 
 			if (transactionDate.isBefore(lastTransactionDate)) {
-				log.debug("Fecha transaccion anterior: {} {}", date, time);
+				log.debug("Transaccion anterior: {} {}", date, time);
 			} else {
-				log.debug("Fecha transaccion: {} {}", date, time);
+				log.debug("Transaccion: {} {}", date, time);
 
 				// Creamos Transaction
 				Transaction transaction = new Transaction();
@@ -173,10 +173,6 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			}
 
 		}
-
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	private void doTransaction(WebElement webElement, Transaction transaction) {

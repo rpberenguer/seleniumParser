@@ -32,7 +32,7 @@ public class NewsParserJob extends AbstractCronJob implements Job {
 	private String cronExpression;
 
 	@Autowired
-	NewsParserService service;
+	private transient NewsParserService service;
 
 	@Override
 	public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
