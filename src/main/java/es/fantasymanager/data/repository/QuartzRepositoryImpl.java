@@ -15,22 +15,22 @@ import es.fantasymanager.scheduler.jobs.StatisticParserJob;
 @Repository
 public class QuartzRepositoryImpl implements QuartzRepository {
 
-    @Autowired
-    StatisticParserJob statisticParserJob;
-    
-    @Override
-    public Map<JobDetail, Set<? extends Trigger>> findJobs() {
-    	Map<JobDetail, Set<? extends Trigger>> jobs = new HashMap<>();
-    	jobs.putAll(this.findStatisticParser());
-    	return jobs;
-    }
+	@Autowired
+	private transient StatisticParserJob statisticParserJob;
 
-    private Map<JobDetail, Set<? extends Trigger>> findStatisticParser() {
-    	Map<JobDetail, Set<? extends Trigger>> jobs = new HashMap<>();
-    	HashSet<Trigger> triggers = new HashSet<>();
-    	triggers.add(statisticParserJob.getTrigger());
-    	jobs.put(statisticParserJob.getJobDetail(), triggers);
-    	return jobs;
-    }
+	@Override
+	public Map<JobDetail, Set<? extends Trigger>> findJobs() {
+		Map<JobDetail, Set<? extends Trigger>> jobs = new HashMap<>();
+		jobs.putAll(this.findStatisticParser());
+		return jobs;
+	}
+
+	private Map<JobDetail, Set<? extends Trigger>> findStatisticParser() {
+		Map<JobDetail, Set<? extends Trigger>> jobs = new HashMap<>();
+		HashSet<Trigger> triggers = new HashSet<>();
+		triggers.add(statisticParserJob.getTrigger());
+		jobs.put(statisticParserJob.getJobDetail(), triggers);
+		return jobs;
+	}
 
 }

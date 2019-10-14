@@ -4,17 +4,22 @@ server:
 logging:
   level:
     root: warn
-    org.springframework.web: info
+    org.springframework.web: error
+    org.springframework.boot.autoconfigure: error
     org.hibernate: error
     es.fantasymanager: debug
   
 spring:
+  devtools:
+    restart:
+      exclude: logs/**
+      additional-exclude: logs/**
   h2:
     console:
       enabled: true
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/fantasymanagerTest?useSSL=false
+    url: jdbc:mysql://localhost:3306/fantasymanagertest?useSSL=false
     username: fantasymanager
     password: fantasymanager
   jpa:
@@ -44,7 +49,8 @@ configuration:
 scheduled:
   parser:
     statistics: 0 0 8 * * ? * # 8am
-    news: 0 0/5 * * * ? * # cada 5 mins     
+    news: 0 0/5 * * * ? * # cada 5 mins empezando en el minuto 0
+    transactions: 0 3/5 * * * ? * # cada 5 mins empezando en el minuto 3     
     
 telegram:
   token: 714506880:AAEQrW0ifef2fDZzlFtlcHSuWHflNaIWN8I

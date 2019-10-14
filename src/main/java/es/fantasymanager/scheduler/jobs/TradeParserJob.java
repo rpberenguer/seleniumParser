@@ -29,7 +29,7 @@ public class TradeParserJob extends AbstractCronJob implements Job {
 	private String cronExpression;
 
 	@Autowired
-	TradeParserService service;
+	private transient TradeParserService service;
 
 	@SuppressWarnings("unchecked")
 	@Override

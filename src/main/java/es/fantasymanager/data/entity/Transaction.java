@@ -44,7 +44,7 @@ public class Transaction {
 	@JoinColumn(name = "PLAYER_DROPPED_ID")
 	private Player playerDropped;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "DATE")
 	private Date date;
 

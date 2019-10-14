@@ -28,12 +28,15 @@ import es.fantasymanager.configuration.TelegramConfig;
 import es.fantasymanager.data.entity.FantasyTeam;
 import es.fantasymanager.data.entity.Parameter;
 import es.fantasymanager.data.entity.Player;
+import es.fantasymanager.data.entity.Transaction;
 import es.fantasymanager.data.repository.FantasyTeamRepository;
 import es.fantasymanager.data.repository.ParameterRepository;
 import es.fantasymanager.data.repository.PlayerRepository;
+import es.fantasymanager.data.repository.TransactionRepository;
 import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.services.interfaces.TransactionParserService;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.DateUtils;
 import es.fantasymanager.utils.FantasyManagerHelper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -52,6 +55,9 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 	@Autowired
 	private transient FantasyTeamRepository fantasyTeamRepository;
+
+	@Autowired
+	private transient TransactionRepository transactionRepository;
 
 //	@Autowired
 //	private transient FantasyManagerHelper fmHelper;
@@ -147,12 +153,19 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			LocalDateTime transactionDate = LocalDateTime.parse(date + " " + time, formatterTransaction);
 
 			if (transactionDate.isBefore(lastTransactionDate)) {
-				log.debug("Fecha transaccion anterior: {} {}", date, time);
+				log.debug("Transaccion anterior: {} {}", date, time);
 			} else {
-				log.debug("Fecha transaccion: {} {}", date, time);
+				log.debug("Transaccion: {} {}", date, time);
+
+				// Creamos Transaction
+				Transaction transaction = new Transaction();
+				transaction.setDate(DateUtils.asDate(transactionDate));
 
 				// doTransaction
-				doTransaction(webElement);
+				doTransaction(webElement, transaction);
+
+				// guardamos tx
+				transactionRepository.save(transaction);
 
 				// actualizamos parametro
 				lastTransactionParameter.setValue(transactionDate.format(formatterTransaction));
@@ -160,24 +173,21 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			}
 
 		}
-
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 	}
 
-	private void doTransaction(WebElement webElement) {
+	private void doTransaction(WebElement webElement, Transaction transaction) {
 
 		// buscamos el fantasyTeam
 		WebElement fantasyTeamElement = webElement.findElement(BY_TRANSACTION_FANTASY_TEAM_ELEMENT);
 		String fantasyTeamName = fantasyTeamElement.getAttribute("title");
 
-		// buscamos fantasyTeam
 		FantasyTeam fantasyTeam = fantasyTeamRepository.findByTeamName(fantasyTeamName);
 		if (fantasyTeam == null) {
 			log.error("FantasyTeam con nombre {} no encontrado.", fantasyTeamName);
 			return;
 		}
+
+		transaction.setFantasyTeam(fantasyTeam);
 
 		String text = "<b>" + fantasyTeamName + "</b>\r\n";
 
@@ -185,7 +195,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		final List<WebElement> spanElements = webElement.findElements(BY_TRANSACTION_DETAILS_SPAN);
 
 		for (WebElement spanElement : spanElements) {
-			text += doAction(spanElement, fantasyTeam);
+			text += doAction(spanElement, transaction);
 		}
 
 		// enviamos transaccion por telegram
@@ -197,7 +207,7 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 	}
 
-	private String doAction(WebElement spanElement, FantasyTeam fantasyTeam) {
+	private String doAction(WebElement spanElement, Transaction transaction) {
 
 		String spanClass = spanElement.getAttribute("class");
 		String action = StringUtils.substringBetween(spanClass, "waiver-", " db");
@@ -213,9 +223,11 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		}
 
 		if (ACTION_ADD.equals(action)) {
-			player.setFantasyTeam(fantasyTeam);
+			player.setFantasyTeam(transaction.getFantasyTeam());
+			transaction.setPlayerAdded(player);
 		} else if (ACTION_DROP.equals(action)) {
 			player.setFantasyTeam(null);
+			transaction.setPlayerDropped(player);
 		} else {
 			log.error("Action {} no válida.", action);
 			return null;
@@ -224,7 +236,8 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		// guardamos jugador
 		playerRepository.save(player);
 
-		log.debug("FantasyTeam {}, action {}, player {}", fantasyTeam.getTeamName(), action, playerName);
+		log.debug("FantasyTeam {}, action {}, player {}", transaction.getFantasyTeam().getTeamName(), action,
+				playerName);
 
 		return action + " " + playerName + "\r\n";
 

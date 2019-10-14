@@ -4,13 +4,15 @@ import es.fantasymanager.scheduler.jobs.AbstractCronJob;
 import es.fantasymanager.scheduler.jobs.NewsParserJob;
 import es.fantasymanager.scheduler.jobs.StatisticParserJob;
 import es.fantasymanager.scheduler.jobs.TradeParserJob;
+import es.fantasymanager.scheduler.jobs.TransactionParserJob;
 import lombok.Getter;
 
 @Getter
 public enum JobsEnum {
 	TRADE_PARSER("trade-parser", "Trade parser", TradeParserJob.class),
 	STATISTIC_PARSER("statistic-parser", "Statistic parser", StatisticParserJob.class),
-	NEWS_PARSER("news-parser", "News parser", NewsParserJob.class);
+	NEWS_PARSER("news-parser", "News parser", NewsParserJob.class),
+	TRANSACTION_PARSER("transaction-parser", "Transaction parser", TransactionParserJob.class);
 
 	private String name;
 	private String description;
