@@ -1,10 +1,11 @@
 package es.fantasymanager.services;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -25,6 +26,7 @@ import org.testng.Assert;
 
 import es.fantasymanager.configuration.SeleniumConfig;
 import es.fantasymanager.configuration.TelegramConfig;
+import es.fantasymanager.data.business.TransactionData;
 import es.fantasymanager.data.entity.FantasyTeam;
 import es.fantasymanager.data.entity.Parameter;
 import es.fantasymanager.data.entity.Player;
@@ -114,12 +116,12 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 
 					waitForLoad(driver);
 
-					getTransactionsByPage(driver, lastTransactionParameter);
+					getTransactionsByPage(driver, wait, lastTransactionParameter);
 				}
 			}
 			// si no hay paginacion
 			else {
-				getTransactionsByPage(driver, lastTransactionParameter);
+				getTransactionsByPage(driver, wait, lastTransactionParameter);
 			}
 
 		} catch (Exception e) {
@@ -132,10 +134,12 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		log.info("Transaction Parser Ended! " + Thread.currentThread().getId());
 	}
 
-	private void getTransactionsByPage(WebDriver driver, Parameter lastTransactionParameter) {
+	private void getTransactionsByPage(WebDriver driver, WebDriverWait wait, Parameter lastTransactionParameter) {
 		log.debug("-------- getTransactionsByPage ---------");
 
-		final List<WebElement> transactionList = driver.findElements(BY_TRANSACTION_CELL_DIV);
+//		final List<WebElement> transactionList = driver.findElements(BY_TRANSACTION_CELL_DIV);
+		final List<WebElement> transactionList = wait
+				.until(ExpectedConditions.presenceOfAllElementsLocatedBy(BY_TRANSACTION_CELL_DIV));
 
 		// ordenamos descendente
 		Collections.reverse(transactionList);
@@ -158,14 +162,15 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 				log.debug("Transaccion: {} {}", date, time);
 
 				// Creamos Transaction
-				Transaction transaction = new Transaction();
-				transaction.setDate(DateUtils.asDate(transactionDate));
+				TransactionData transactionData = new TransactionData();
+				transactionData.setDate(DateUtils.asDate(transactionDate));
 
 				// doTransaction
-				doTransaction(webElement, transaction);
+				doTransaction(webElement, transactionData);
 
 				// guardamos tx
-				transactionRepository.save(transaction);
+				persistTransaction(transactionData);
+//				transactionRepository.save(transaction);
 
 				// actualizamos parametro
 				lastTransactionParameter.setValue(transactionDate.format(formatterTransaction));
@@ -175,39 +180,33 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		}
 	}
 
-	private void doTransaction(WebElement webElement, Transaction transaction) {
+	private void doTransaction(WebElement webElement, TransactionData transactionData) {
 
 		// buscamos el fantasyTeam
 		WebElement fantasyTeamElement = webElement.findElement(BY_TRANSACTION_FANTASY_TEAM_ELEMENT);
 		String fantasyTeamName = fantasyTeamElement.getAttribute("title");
 
-		FantasyTeam fantasyTeam = fantasyTeamRepository.findByTeamName(fantasyTeamName);
-		if (fantasyTeam == null) {
-			log.error("FantasyTeam con nombre {} no encontrado.", fantasyTeamName);
-			return;
-		}
+		transactionData.setFantasyTeamName(fantasyTeamName);
 
-		transaction.setFantasyTeam(fantasyTeam);
-
-		String text = "<b>" + fantasyTeamName + "</b>\r\n";
+//		String text = "<b>" + fantasyTeamName + "</b>\r\n";
 
 		// los elementos span hijos nos marca si es un added/dropped, add o drop
 		final List<WebElement> spanElements = webElement.findElements(BY_TRANSACTION_DETAILS_SPAN);
 
 		for (WebElement spanElement : spanElements) {
-			text += doAction(spanElement, transaction);
+			doAction(spanElement, transactionData);
 		}
 
 		// enviamos transaccion por telegram
-		try {
-			telegramService.sendMessage(text, telegramConfig.getTransactionsChatId());
-		} catch (IOException e) {
-			log.error("Error enviando telegram {}.", text);
-		}
+//		try {
+//			telegramService.sendMessage(text, telegramConfig.getTransactionsChatId());
+//		} catch (IOException e) {
+//			log.error("Error enviando telegram {}.", text);
+//		}
 
 	}
 
-	private String doAction(WebElement spanElement, Transaction transaction) {
+	private void doAction(WebElement spanElement, TransactionData transactionData) {
 
 		String spanClass = spanElement.getAttribute("class");
 		String action = StringUtils.substringBetween(spanClass, "waiver-", " db");
@@ -215,32 +214,70 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		WebElement playerElement = spanElement.findElement(BY_TRANSACTION_PLAYER_ELEMENT);
 		String playerName = playerElement.getText();
 
-		// buscamos jugador
-		Player player = playerRepository.findPlayerByName(playerName);
-		if (player == null) {
-			log.error("Jugador con nombre {} no encontrado.", playerName);
-			return null;
-		}
-
+//		String emoji = "";
 		if (ACTION_ADD.equals(action)) {
-			player.setFantasyTeam(transaction.getFantasyTeam());
-			transaction.setPlayerAdded(player);
+			transactionData.setPlayerNameAdded(playerName);
+//			emoji = EMOJI_ARROW_UP;
 		} else if (ACTION_DROP.equals(action)) {
-			player.setFantasyTeam(null);
-			transaction.setPlayerDropped(player);
+			transactionData.setPlayerNameDropped(playerName);
+//			emoji = EMOJI_ARROW_DOWN;
 		} else {
 			log.error("Action {} no válida.", action);
-			return null;
+			return;
 		}
 
-		// guardamos jugador
-		playerRepository.save(player);
+//		log.debug("FantasyTeam {}, action {}, player {}", transactionData.getFantasyTeam().getTeamName(), action,
+//				playerName);
+//
+//		return EmojiParser.parseToUnicode(emoji + " " + action + " " + playerName + "\r\n");
 
-		log.debug("FantasyTeam {}, action {}, player {}", transaction.getFantasyTeam().getTeamName(), action,
-				playerName);
+	}
 
-		return action + " " + playerName + "\r\n";
+	private void persistTransaction(TransactionData transactionData) {
 
+		String fantasyTeamName = transactionData.getFantasyTeamName();
+		String playerNameAdded = transactionData.getPlayerNameAdded();
+		String playerNameDropped = transactionData.getPlayerNameDropped();
+		Date date = transactionData.getDate();
+
+		// buscamos fantasyTeam
+		FantasyTeam fantasyTeam = fantasyTeamRepository.findByTeamName(fantasyTeamName);
+		if (fantasyTeam == null) {
+			log.error("FantasyTeam con nombre {} no encontrado.", fantasyTeamName);
+			return;
+		}
+
+		// buscamos player added
+		Player playerAdded = null;
+		if (playerNameAdded != null) {
+			playerAdded = playerRepository.findPlayerByName(playerNameAdded);
+			if (playerAdded == null) {
+				log.error("Jugador con nombre {} no encontrado.", playerNameAdded);
+				return;
+			}
+		}
+
+		// buscamos player dropped
+		Player playerDropped = null;
+		if (playerNameDropped != null) {
+			playerDropped = playerRepository.findPlayerByName(playerNameDropped);
+			if (playerDropped == null) {
+				log.error("Jugador con nombre {} no encontrado.", playerNameDropped);
+				return;
+			}
+		}
+
+		// verificamos que no existe la trasaccion
+		List<Transaction> transactions = new ArrayList<Transaction>();
+
+		transactionRepository.findByDateAndFantasyTeamAndPlayerAddedAndPlayerDropped(date, fantasyTeam, playerAdded,
+				playerDropped);
+
+		if (transactions.isEmpty()) {
+
+		} else {
+			log.debug("Transaccion ya realizada: {}", transactionData);
+		}
 	}
 
 	private static LocalDateTime getLastTransactionDate(Parameter lastTransactionParameter) {

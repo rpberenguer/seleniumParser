@@ -101,6 +101,8 @@ public interface Constants {
 	 ************ EMOJIS ************
 	 ********************************/
 	public static final String EMOJI_WARNING = ":warning:";
+	public static final String EMOJI_ARROW_UP = ":arrow_up_small:";
+	public static final String EMOJI_ARROW_DOWN = ":arrow_down_small:";
 	public static final Double FANTASYPOINTS_TO_SEND_WARNING = Double.valueOf(15);
 
 	/***************************************
