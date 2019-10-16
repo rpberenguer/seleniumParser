@@ -49,8 +49,8 @@ configuration:
 scheduled:
   parser:
     statistics: 0 0 8 * * ? * # 8am
-    news: 0 0/5 * * * ? * # cada 5 mins empezando en el minuto 0
-    transactions: 0 3/5 * * * ? * # cada 5 mins empezando en el minuto 3     
+    news: 0 0 0/1 * * ? * # cada 1h
+    transactions: 0 0 3/1 * * ? * # cada 1h   
     
 telegram:
   token: 714506880:AAEQrW0ifef2fDZzlFtlcHSuWHflNaIWN8I
@@ -78,6 +78,12 @@ spring:
 selenium:
   leagueId: 97189
   
+scheduled:
+  parser:
+    statistics: 0 0 8 * * ? * # 8am
+    news: 0 0/5 * * * ? * # cada 5 mins empezando en el minuto 0
+    transactions: 0 3/5 * * * ? * # cada 5 mins empezando en el minuto 3    
+      
 ---
 
 spring:
