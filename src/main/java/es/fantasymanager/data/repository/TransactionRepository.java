@@ -13,4 +13,9 @@ public interface TransactionRepository extends CrudRepository<Transaction, Integ
 
 	List<Transaction> findByDateAndFantasyTeamAndPlayerAddedAndPlayerDropped(Date date, FantasyTeam fantasyTeam,
 			Player playerAdded, Player playerDropped);
+
+	List<Transaction> findByDateAndFantasyTeamAndPlayerAdded(Date date, FantasyTeam fantasyTeam, Player playerAdded);
+
+	List<Transaction> findByDateAndFantasyTeamAndPlayerDropped(Date date, FantasyTeam fantasyTeam,
+			Player playerDropped);
 }

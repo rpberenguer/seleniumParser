@@ -1,6 +1,7 @@
 package es.fantasymanager.services;
 
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -93,11 +94,24 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			log.debug("Formatted Time: " + formatDateTime);
 
 			// Seleccionamos fecha de transacciones en el combo 'Start Date'
-			final WebElement webElement = wait.until(ExpectedConditions.visibilityOfElementLocated(
-					By.cssSelector(String.format(TRANSACTIONS_START_DATE_OPTIONS, formatDateTime))));
+			final List<WebElement> webElements = wait.until(ExpectedConditions
+					.visibilityOfAllElementsLocatedBy(By.cssSelector(TRANSACTIONS_START_DATE_OPTIONS)));
 
-			log.debug("Option Date: " + webElement.getAttribute("value"));
-			webElement.click();
+			// si la última transaccion es del dia actual cogemos el último dia del combo
+			// 'Start Date'
+			if (LocalDate.now().equals(lastTransactionDate.toLocalDate())) {
+				WebElement webElement = webElements.get(webElements.size() - 1);
+				log.debug("Option Date: " + webElement.getAttribute("value"));
+				webElement.click();
+			} else {
+				for (WebElement webElement : webElements) {
+					log.debug("Option Date: " + webElement.getAttribute("value"));
+					if (formatDateTime.equals(webElement.getAttribute("value"))) {
+						log.debug("Clickamos");
+						webElement.click();
+					}
+				}
+			}
 
 			// Buscamos paginas
 			final List<WebElement> paginationNavList = driver.findElements(BY_PAGINATION_NAV_LIST);
@@ -270,10 +284,35 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		// verificamos que no existe la trasaccion
 		List<Transaction> transactions = new ArrayList<Transaction>();
 
-		transactionRepository.findByDateAndFantasyTeamAndPlayerAddedAndPlayerDropped(date, fantasyTeam, playerAdded,
-				playerDropped);
+		if (playerAdded != null && playerDropped != null) {
+			transactions = transactionRepository.findByDateAndFantasyTeamAndPlayerAddedAndPlayerDropped(date,
+					fantasyTeam, playerAdded, playerDropped);
+		} else if (playerAdded != null) {
+			transactions = transactionRepository.findByDateAndFantasyTeamAndPlayerAdded(date, fantasyTeam, playerAdded);
+		} else {
+			transactions = transactionRepository.findByDateAndFantasyTeamAndPlayerDropped(date, fantasyTeam,
+					playerDropped);
+		}
 
 		if (transactions.isEmpty()) {
+
+			// guardamos info de los jugadores
+			if (playerAdded != null) {
+				playerAdded.setFantasyTeam(fantasyTeam);
+				playerRepository.save(playerAdded);
+			}
+			if (playerDropped != null) {
+				playerDropped.setFantasyTeam(null);
+				playerRepository.save(playerDropped);
+			}
+
+			// guardamos info de las transacciones
+			Transaction transaction = new Transaction();
+			transaction.setDate(date);
+			transaction.setFantasyTeam(fantasyTeam);
+			transaction.setPlayerAdded(playerAdded);
+			transaction.setPlayerDropped(playerDropped);
+			transactionRepository.save(transaction);
 
 		} else {
 			log.debug("Transaccion ya realizada: {}", transactionData);

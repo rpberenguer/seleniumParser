@@ -29,6 +29,7 @@ spring:
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    show-sql: false
   quartz:
     job-store-type: jdbc
     properties:
