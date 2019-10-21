@@ -14,6 +14,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.vdurmont.emoji.EmojiParser;
+
+import es.fantasymanager.utils.Constants;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -48,4 +51,18 @@ public class Transaction {
 	@Column(name = "DATE")
 	private Date date;
 
+	public String printTelegramMessage() {
+		String text = "<b>" + fantasyTeam.getTeamName() + "</b>\r\n";
+
+		if (playerAdded != null) {
+			text += EmojiParser.parseToUnicode(Constants.EMOJI_ARROW_UP + " Add: " + playerAdded.getName() + "\r\n");
+		}
+
+		if (playerDropped != null) {
+			text += EmojiParser
+					.parseToUnicode(Constants.EMOJI_ARROW_DOWN + " Drop: " + playerDropped.getName() + "\r\n");
+		}
+
+		return text;
+	}
 }

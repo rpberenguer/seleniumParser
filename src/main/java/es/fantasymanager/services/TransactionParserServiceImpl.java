@@ -1,5 +1,6 @@
 package es.fantasymanager.services;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -313,6 +314,14 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 			transaction.setPlayerAdded(playerAdded);
 			transaction.setPlayerDropped(playerDropped);
 			transactionRepository.save(transaction);
+
+			// enviamos transaccion por telegram
+			String text = transaction.printTelegramMessage();
+			try {
+				telegramService.sendMessage(text, telegramConfig.getTransactionsChatId());
+			} catch (IOException e) {
+				log.error("Error enviando telegram {}.", text);
+			}
 
 		} else {
 			log.debug("Transaccion ya realizada: {}", transactionData);
