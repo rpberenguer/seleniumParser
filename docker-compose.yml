@@ -1,20 +1,19 @@
 version: "3.7"
 services:
-    selenium-hub:
-        image: selenium/hub
+    hub:
+        image: selenium/hub:3.141.59-xenon
         ports:
-            - 4444:4444
-        environment:
-            - GRID_BROWSER_TIMEOUT=120
-            - GRID_TIMEOUT=120
+            - "4444:4444"
     chrome:
-        image: selenium/node-chrome-debug
-        links:
-            - selenium-hub:hub
-    firefox:
-        image: selenium/node-firefox-debug
-        links:
-            - selenium-hub:hub
+        image: selenium/node-chrome:3.141.59-xenon
+        volumes:
+            - /dev/shm:/dev/shm
+        environment:
+            HUB_HOST: hub
+            HUB_PORT: 4444
+        deploy:
+            replicas: 1
+        entrypoint: bash -c 'SE_OPTS="-host $$HOSTNAME" /opt/bin/entry_point.sh'
     db:
         image: mysql:5.7
         restart: always
@@ -51,7 +50,12 @@ services:
             # jms
             - "61616:61616"
         networks: [backing-services]
-        volumes: ["activemq-data:/opt/activemq/conf", "activemq-data:/data/activemq","activemq-data:/var/log/activemq"]
+        volumes:
+            [
+                "activemq-data:/opt/activemq/conf",
+                "activemq-data:/data/activemq",
+                "activemq-data:/var/log/activemq",
+            ]
         environment:
             ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT: "true"
             ACTIVEMQ_ADMIN_LOGIN: admin

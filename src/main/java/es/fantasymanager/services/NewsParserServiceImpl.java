@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,7 @@ import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.services.interfaces.NewsParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.FantasyManagerHelper;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -50,8 +50,8 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 	@Autowired
 	private TelegramConfig telegramConfig;
 
-//	@Autowired
-//	private SeleniumGridDockerHub hub;
+	@Autowired
+	private SeleniumGridDockerHub hub;
 
 	@Override
 	@Transactional
@@ -67,10 +67,10 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 //		throw new RuntimeException("not found...");
 
 		// Driver
-		// hub.setupDriver("chrome");
-		// final WebDriver driver = hub.getDriver();
+		 hub.setupDriver("chrome");
+		 final WebDriver driver = hub.getDriver();
 //		final WebDriver driver = new ChromeDriver();
-		final WebDriver driver = new FirefoxDriver();
+//		final WebDriver driver = new FirefoxDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {
