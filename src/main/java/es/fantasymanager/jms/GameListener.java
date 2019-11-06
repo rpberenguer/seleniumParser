@@ -1,5 +1,6 @@
 package es.fantasymanager.jms;
 
+import java.net.MalformedURLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -32,6 +33,7 @@ import es.fantasymanager.data.jms.GameJmsMessageData;
 import es.fantasymanager.data.jms.StatisticJmsMessageData;
 import es.fantasymanager.data.repository.GameRepository;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -45,11 +47,14 @@ public class GameListener implements Constants {
 
 	@Autowired
 	private JmsTemplate jmsTemplate;
+	
+	@Autowired
+	private SeleniumGridDockerHub hub;
 
 	@JmsListener(destination = GAME_QUEUE, containerFactory = "myFactory")
 	@Transactional
 	public void receiveMessage(@Payload GameJmsMessageData gameMessage, @Headers MessageHeaders headers,
-			Message message, Session session) throws JMSException {
+			Message message, Session session) throws JMSException, MalformedURLException {
 
 		log.info("Received <---" + gameMessage + "--->");
 
@@ -66,7 +71,9 @@ public class GameListener implements Constants {
 //		throw new RuntimeException("not found...");
 
 		// Driver
-		final WebDriver driver = new ChromeDriver();
+//		final WebDriver driver = new ChromeDriver();
+		 hub.setupDriver("chrome");
+		 final WebDriver driver = hub.getDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Fechas a parsear

@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 //@SpringBootApplication(scanBasePackages = "es.fantasymanager")
 @SpringBootApplication
 @EnableJpaRepositories
-public class FantasyManagerRootConfig extends SpringBootServletInitializer {
+public class FantasyManagerRootConfig /*extends SpringBootServletInitializer*/ {
 
 	static {
 		System.setProperty("webdriver.chrome.driver", "E:\\webdrivers\\chromedriver.exe");
@@ -24,8 +24,8 @@ public class FantasyManagerRootConfig extends SpringBootServletInitializer {
 		SpringApplication.run(FantasyManagerRootConfig.class, args);
 	}
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(FantasyManagerRootConfig.class);
-	}
+//	@Override
+//	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//		return application.sources(FantasyManagerRootConfig.class);
+//	}
 }

@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +20,15 @@ import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.data.repository.TeamRepository;
 import es.fantasymanager.services.interfaces.RosterParserService;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class RosterParserServiceImpl implements RosterParserService, Constants {
 
-//	@Autowired
-//	private SeleniumGridDockerHub hub;
+	@Autowired
+	private SeleniumGridDockerHub hub;
 
 	@Autowired
 	private transient TeamRepository teamRespository;
@@ -43,9 +43,9 @@ public class RosterParserServiceImpl implements RosterParserService, Constants {
 		log.info("Roster Parser Started! " + Thread.currentThread().getId());
 
 		// Get driver
-		// hub.setupDriver("chrome");
-		// WebDriver driver = hub.getDriver();
-		final WebDriver driver = new ChromeDriver();
+		hub.setupDriver("chrome");
+		WebDriver driver = hub.getDriver();
+//		final WebDriver driver = new ChromeDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		try {

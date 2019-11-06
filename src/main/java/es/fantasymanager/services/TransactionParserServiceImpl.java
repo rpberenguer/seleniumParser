@@ -42,6 +42,7 @@ import es.fantasymanager.services.interfaces.TransactionParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.DateUtils;
 import es.fantasymanager.utils.FantasyManagerHelper;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -63,6 +64,9 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 	@Autowired
 	private transient TransactionRepository transactionRepository;
 
+	@Autowired
+	private SeleniumGridDockerHub hub;
+
 //	@Autowired
 //	private transient FantasyManagerHelper fmHelper;
 
@@ -79,7 +83,9 @@ public class TransactionParserServiceImpl implements TransactionParserService, C
 		log.info("Transaction Parser Started! " + Thread.currentThread().getId());
 
 		// Driver
-		WebDriver driver = new ChromeDriver();
+		hub.setupDriver("chrome");
+		final WebDriver driver = hub.getDriver();
+//		WebDriver driver = new ChromeDriver();
 		WebDriverWait wait = new WebDriverWait(driver, 5);
 		JavascriptExecutor jsExecutor = ((JavascriptExecutor) driver);
 

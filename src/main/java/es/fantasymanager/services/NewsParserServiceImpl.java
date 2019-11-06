@@ -59,13 +59,6 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 
 		log.info("Parse News Started! " + Thread.currentThread().getId());
 
-//		final News news = new News();
-//		news.setTitle("abc");
-//
-//		newsRepository.save(news);
-//
-//		throw new RuntimeException("not found...");
-
 		// Driver
 		 hub.setupDriver("chrome");
 		 final WebDriver driver = hub.getDriver();
@@ -92,7 +85,7 @@ public class NewsParserServiceImpl implements NewsParserService, Constants {
 		} catch (final Exception e) {
 			log.error("Error tratando news.", e);
 		} finally {
-			driver.close();
+			driver.quit();
 		}
 
 	}

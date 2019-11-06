@@ -35,6 +35,7 @@ import es.fantasymanager.data.repository.StatisticRepository;
 import es.fantasymanager.data.repository.TeamRepository;
 import es.fantasymanager.services.interfaces.TelegramService;
 import es.fantasymanager.utils.Constants;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -55,6 +56,9 @@ public class StatisticListener implements Constants {
 
 	@Autowired
 	private transient TelegramService telegramService;
+	
+	@Autowired
+	private SeleniumGridDockerHub hub;
 
 	@Autowired
 	private TelegramConfig telegramConfig;
@@ -66,7 +70,9 @@ public class StatisticListener implements Constants {
 		log.info("Received <---" + statisticMessage + "--->");
 
 		// Driver
-		final WebDriver driver = new ChromeDriver();
+//		final WebDriver driver = new ChromeDriver();
+		 hub.setupDriver("chrome");
+		 final WebDriver driver = hub.getDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Timing

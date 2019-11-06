@@ -25,12 +25,16 @@ import es.fantasymanager.data.repository.PlayerRepository;
 import es.fantasymanager.services.interfaces.FantasyTeamParserService;
 import es.fantasymanager.utils.Constants;
 import es.fantasymanager.utils.FantasyManagerHelper;
+import es.fantasymanager.utils.SeleniumGridDockerHub;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
 public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, Constants {
 
+	@Autowired
+	private SeleniumGridDockerHub hub;
+	
 	@Autowired
 	private transient FantasyTeamRepository fantasyTeamRepository;
 
@@ -50,7 +54,9 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 		log.info("Fantasy Team Parser Started! " + Thread.currentThread().getId());
 
 		// Driver
-		final WebDriver driver = new ChromeDriver();
+//		final WebDriver driver = new ChromeDriver();
+		hub.setupDriver("chrome");
+		final WebDriver driver = hub.getDriver();
 		final WebDriverWait wait = new WebDriverWait(driver, 90);
 
 		// Login
@@ -98,6 +104,12 @@ public class FantasyTeamParserServiceImpl implements FantasyTeamParserService, C
 			// guardamos el param lastTransaction con la fecha actual
 			LocalDateTime lastTransactionDate = LocalDateTime.now();
 			Parameter parameter = parameterRepository.findByCode(LAST_TRANSACTION_DATE);
+			
+			if(parameter == null)
+			{
+				parameter = new Parameter();
+				parameter.setCode(LAST_TRANSACTION_DATE);
+			}
 			parameter.setValue(lastTransactionDate.format(formatterTransaction));
 			parameterRepository.save(parameter);
 
